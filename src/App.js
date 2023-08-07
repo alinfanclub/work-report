@@ -1,23 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
-
+import { Outlet } from "react-router-dom";
+import NavBar from "./components/NavBar";
+import { useEffect } from "react";
+import { onUserStateChanged } from "./api/firebase";
+import { useNavigate } from "react-router-dom";
+import { getUserDate } from "./api/firestore";
 function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    onUserStateChanged((user) => {
+      if (!user) {
+        navigate("/login");
+      } else {
+        getUserDate(user);
+      }
+    });
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App h-full">
+      <div id="container" className="flex h-full">
+        <NavBar />
+        <Outlet />
+      </div>
     </div>
   );
 }
