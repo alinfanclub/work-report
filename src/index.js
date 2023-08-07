@@ -7,6 +7,7 @@ import MainPage from "./pages/MainPage";
 import WritePage from "./pages/WritePage";
 import LoginPage from "./pages/LoginPage";
 import CreateUser from "./pages/CreateUser";
+import ViewReport from "./pages/ViewReport";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
         path: "/write",
         element: <WritePage />,
       },
+      {
+        path: "/reports/:id",
+        element: <ViewReport />,
+      }
     ],
   },
   {

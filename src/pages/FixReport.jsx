@@ -2,14 +2,15 @@ import { HotTable } from "@handsontable/react";
 import React, { createRef, useEffect, useRef, useState } from "react";
 import { CSVLink } from "react-csv";
 import { registerAllModules } from "handsontable/registry";
-import { addReport } from "../api/firestore";
+import { addReport, getReportDataDetail } from "../api/firestore";
 import { onUserStateChanged } from "../api/firebase";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
-export default function WritePage() {
+export default function FixReport() {
   registerAllModules();
   const navigate = useNavigate();
   const hotRef = useRef(null);
+  const param = useParams();
   let hot;
 
   const [user, setUser] = useState(null);
@@ -26,6 +27,18 @@ export default function WritePage() {
   useEffect(() => {
     onUserStateChanged((user) => {
       setUser(user);
+    });
+  }, []);
+
+  useEffect(() => {
+    getReportDataDetail(param.id).then((data) => {
+      console.log(data);
+      console.log(data.data);
+      console.log(data.headers);
+      setData(JSON.parse(data.data));
+      setHeaders(data.headers);
+      setTitle(data.title);
+      console.log(data.title);
     });
   }, []);
 
