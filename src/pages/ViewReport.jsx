@@ -20,9 +20,12 @@ export default function ViewReport() {
     });
   }, [param]);
   return (
-    <div className="grow-[1]">
-      <h1>{title && title}</h1>
-      <p>{createdAt && createdAt}</p>
+    <div className="grow-[1] flex flex-col gap-4 p-4">
+      <h1 className="flex gap-4 items-end">
+        {title && title}
+        <small>{createdAt && createdAt}</small>
+      </h1>
+
       <HotTable
         id="hot"
         data={data && data}
@@ -30,20 +33,28 @@ export default function ViewReport() {
         rowHeaders={true}
         manualColumnMove={true}
         fixedColumnsStart={1}
-        colWidths={100}
-        width="100%"
-        height={`50vh`}
+        colWidths={200}
+        wrowHeights={40}
         licenseKey="non-commercial-and-evaluation"
         readOnly={true}
         // for non-commercial use only
       />
 
-      {data.length > 0 && headers.length > 0 && (
-        <CSVLink data={data} headers={headers} filename={`${title}.csv`}>
-          Export CSV
-        </CSVLink>
-      )}
-      <Link to={`/reports/${param}/fix`}>fix</Link>
+      <div className="flex gap-4">
+        {data.length > 0 && headers.length > 0 && (
+          <CSVLink
+            data={data}
+            headers={headers}
+            filename={`${title}.csv`}
+            className="btn_default"
+          >
+            Export CSV
+          </CSVLink>
+        )}
+        <Link to={`/reports/${param}/fix`} className="btn_default">
+          fix
+        </Link>
+      </div>
     </div>
   );
 }

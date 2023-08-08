@@ -16,10 +16,12 @@ export default function WritePage() {
   // eslint-disable-next-line
   const [headers, setHeaders] = useState([
     "날짜",
-    "제목",
+    "분류",
+    "요청자",
     "내용",
-    "작성자",
+    "작업자",
     "전달방식",
+    "관련 파일명",
   ]);
   // eslint-disable-next-line
   const [data, setData] = useState();
@@ -47,13 +49,12 @@ export default function WritePage() {
     });
   };
 
-  // const gatData = () => {
-  //   (...args) => saveClickCallback(...args)
-  // }
-
   return (
-    <div className="grow-[1]">
-      <form onSubmit={(...arg) => saveClickCallback(...arg)}>
+    <div className="grow-[1] p-4">
+      <form
+        onSubmit={(...arg) => saveClickCallback(...arg)}
+        className="flex flex-col gap-4 items-start"
+      >
         <input
           type="text"
           placeholder="제목"
@@ -62,16 +63,15 @@ export default function WritePage() {
         />
         <HotTable
           id="hot"
-          data={data}
+          width={1000}
+          contextMenu={true}
           colHeaders={headers}
           rowHeaders={true}
           manualColumnMove={true}
           fixedColumnsStart={1}
-          colWidths={100}
-          width="100%"
-          height={`50vh`}
           licenseKey="non-commercial-and-evaluation"
           ref={hotRef}
+          rowHeights={40}
           columns={[
             {
               type: "date",
@@ -94,16 +94,31 @@ export default function WritePage() {
                 },
               },
             },
+            {
+              editor: "select",
+              selectOptions: ["요청", "GUI", "퍼블", "휴무", "기타"],
+            },
+            {},
             {},
             {},
             {},
             {},
           ]}
+          manualColumnResize={true}
+          dropdownMenu={true}
+          columnSorting={true}
           // for non-commercial use only
         />
-        <button type="submit">save</button>
+        <div className="flex gap-4">
+          <button type="submit" className="btn_default">
+            save
+          </button>
+
+          <button onClick={addRow} type="button" className="btn_default">
+            addRow
+          </button>
+        </div>
       </form>
-      <button onClick={addRow}>addRow</button>
     </div>
   );
 }

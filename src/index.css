@@ -12,7 +12,7 @@ body {
 }
 
 #root {
-  @apply w-full max-w-screen-2xl h-full h-screen;
+  @apply w-full h-full h-screen;
 }
 
 code {
@@ -21,6 +21,9 @@ code {
 }
 
 button.btn_default {
+  @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
+}
+a.btn_default {
   @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
 }
 input {
@@ -40,4 +43,7 @@ textarea {
 }
 td p {
   white-space: pre-wrap;
+}
+select {
+  @apply appearance-none border rounded w-full text-gray-700 leading-tight border-black text-center;
 }

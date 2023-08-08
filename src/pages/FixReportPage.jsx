@@ -14,13 +14,7 @@ export default function FixReportPage() {
   // eslint-disable-next-line
   const [user, setUser] = useState(null);
   const [title, setTitle] = useState("");
-  const [headers, setHeaders] = useState([
-    "날짜",
-    "제목",
-    "내용",
-    "작성자",
-    "전달방식",
-  ]);
+  const [headers, setHeaders] = useState();
   const [data, setData] = useState();
 
   useEffect(() => {
@@ -102,6 +96,11 @@ export default function FixReportPage() {
                 },
               },
             },
+            {
+              editor: "select",
+              selectOptions: ["요청", "GUI", "퍼블", "휴무", "기타"],
+            },
+            {},
             {},
             {},
             {},

@@ -17,7 +17,7 @@ function App() {
     });
   }, [navigate]);
   return (
-    <div className="App h-full">
+    <div className="App h-full w-full">
       <div id="container" className="flex h-full">
         <NavBar />
         <Outlet />
