@@ -48,9 +48,9 @@ export default function FixReportPage() {
     hot = hotRef.current.hotInstance;
     console.log({ data: JSON.stringify(hot.getData()) });
     let data = JSON.stringify(hot.getData());
-    await updateReport(headers, data, title, param.id).then(() => {
+    await updateReport(headers, data, title, param).then(() => {
       setTitle("");
-      navigate(`/`);
+      navigate(`/reports/${param}`);
     });
   };
 
@@ -80,6 +80,33 @@ export default function FixReportPage() {
           height={`50vh`}
           licenseKey="non-commercial-and-evaluation"
           ref={hotRef}
+          columns={[
+            {
+              type: "date",
+              dateFormat: "YY/MM/DD",
+              correctFormat: true,
+              defaultDate: new Intl.DateTimeFormat("ko", {
+                dateStyle: "full",
+                timeStyle: "short",
+              }).format(new Date()),
+              // datePicker additional options
+              // (see https://github.com/dbushell/Pikaday#configuration)
+              datePickerConfig: {
+                // First day of the week (0: Sunday, 1: Monday, etc)
+                firstDay: 0,
+                showWeekNumber: true,
+                licenseKey: "non-commercial-and-evaluation",
+                disableDayFn(date) {
+                  // Disable Sunday and Saturday
+                  return date.getDay() === 0 || date.getDay() === 6;
+                },
+              },
+            },
+            {},
+            {},
+            {},
+            {},
+          ]}
           // for non-commercial use only
         />
         <button type="submit">save</button>
