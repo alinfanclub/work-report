@@ -1,6 +1,5 @@
 import { HotTable } from "@handsontable/react";
-import React, { createRef, useEffect, useRef, useState } from "react";
-import { CSVLink } from "react-csv";
+import React, { useEffect, useRef, useState } from "react";
 import { registerAllModules } from "handsontable/registry";
 import { addReport } from "../api/firestore";
 import { onUserStateChanged } from "../api/firebase";
@@ -14,6 +13,7 @@ export default function WritePage() {
 
   const [user, setUser] = useState(null);
   const [title, setTitle] = useState("");
+  // eslint-disable-next-line
   const [headers, setHeaders] = useState([
     "날짜",
     "제목",
@@ -21,6 +21,7 @@ export default function WritePage() {
     "작성자",
     "전달방식",
   ]);
+  // eslint-disable-next-line
   const [data, setData] = useState();
 
   useEffect(() => {
@@ -71,6 +72,33 @@ export default function WritePage() {
           height={`50vh`}
           licenseKey="non-commercial-and-evaluation"
           ref={hotRef}
+          columns={[
+            {
+              type: "date",
+              dateFormat: "YY/MM/DD",
+              correctFormat: true,
+              defaultDate: new Intl.DateTimeFormat("ko", {
+                dateStyle: "full",
+                timeStyle: "short",
+              }).format(new Date()),
+              // datePicker additional options
+              // (see https://github.com/dbushell/Pikaday#configuration)
+              datePickerConfig: {
+                // First day of the week (0: Sunday, 1: Monday, etc)
+                firstDay: 0,
+                showWeekNumber: true,
+                licenseKey: "non-commercial-and-evaluation",
+                disableDayFn(date) {
+                  // Disable Sunday and Saturday
+                  return date.getDay() === 0 || date.getDay() === 6;
+                },
+              },
+            },
+            {},
+            {},
+            {},
+            {},
+          ]}
           // for non-commercial use only
         />
         <button type="submit">save</button>

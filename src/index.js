@@ -8,6 +8,7 @@ import WritePage from "./pages/WritePage";
 import LoginPage from "./pages/LoginPage";
 import CreateUser from "./pages/CreateUser";
 import ViewReport from "./pages/ViewReport";
+import FixReportPage from "./pages/FixReportPage";
 
 const router = createBrowserRouter([
   {
@@ -26,7 +27,11 @@ const router = createBrowserRouter([
       {
         path: "/reports/:id",
         element: <ViewReport />,
-      }
+      },
+      {
+        path: "/reports/:id/fix",
+        element: <FixReportPage />,
+      },
     ],
   },
   {

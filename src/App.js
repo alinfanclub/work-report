@@ -15,7 +15,7 @@ function App() {
         getUserDate(user);
       }
     });
-  }, []);
+  }, [navigate]);
   return (
     <div className="App h-full">
       <div id="container" className="flex h-full">

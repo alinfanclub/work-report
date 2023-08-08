@@ -6,9 +6,9 @@ import {
   query,
   where,
   getDocs,
-  addDoc,
+  updateDoc,
 } from "firebase/firestore";
-import { v1 as uuidv1 } from 'uuid';
+import { v1 as uuidv1 } from "uuid";
 
 export async function createUser(user) {
   await setDoc(doc(db, "account", user.uid), {
@@ -17,18 +17,6 @@ export async function createUser(user) {
     photoURL: user.photoURL,
     uid: user.uid,
   });
-}
-
-export async function addReport(headers, data, user, title) {
-  const reportId = uuidv1();
-  await setDoc(doc(db, "reports", reportId), {
-    headers: headers,
-    data: data,
-    userId: user.uid,
-    createdAt: new Date(),
-    title: title,
-    reportId: reportId,
-  })
 }
 
 export async function getUserDate(user) {
@@ -45,10 +33,7 @@ export async function getUserDate(user) {
 }
 
 export async function getReportData(user) {
-  const q = query(
-    collection(db, "reports"),
-    where("userId", "==", user.uid)
-  );
+  const q = query(collection(db, "reports"), where("userId", "==", user.uid));
 
   const querySnapshot = await getDocs(q);
   let data = [];
@@ -61,15 +46,40 @@ export async function getReportData(user) {
 }
 
 export async function getReportDataDetail(params) {
-  const q = query(
-    collection(db, "reports"),
-    where("reportId", "==", params)
-  );
+  const q = query(collection(db, "reports"), where("reportId", "==", params));
   const querySnapshot = await getDocs(q);
   let data;
   querySnapshot.forEach((doc) => {
-    data = (Object(doc.data()));
-    console.log(data)
+    data = Object(doc.data());
+    console.log(data);
   });
   return data;
+}
+
+export async function addReport(headers, data, user, title) {
+  const reportId = uuidv1();
+  await setDoc(doc(db, "reports", reportId), {
+    headers: headers,
+    data: data,
+    userId: user.uid,
+    createdAt: new Intl.DateTimeFormat("ko", {
+      dateStyle: "full",
+      timeStyle: "short",
+    }).format(new Date()),
+    title: title,
+    reportId: reportId,
+    fix: false,
+  });
+}
+
+export async function updateReport(headers, data, title, reportId) {
+  const washingtonRef = doc(db, "reports", reportId);
+
+  // Set the "capital" field of the city 'DC'
+  await updateDoc(washingtonRef, {
+    title: title,
+    headers: headers,
+    data: data,
+    fix: true,
+  });
 }

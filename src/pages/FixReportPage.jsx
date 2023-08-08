@@ -1,18 +1,17 @@
 import { HotTable } from "@handsontable/react";
-import React, { createRef, useEffect, useRef, useState } from "react";
-import { CSVLink } from "react-csv";
+import React, { useEffect, useRef, useState } from "react";
 import { registerAllModules } from "handsontable/registry";
-import { addReport, getReportDataDetail } from "../api/firestore";
+import { getReportDataDetail, updateReport } from "../api/firestore";
 import { onUserStateChanged } from "../api/firebase";
 import { useNavigate, useParams } from "react-router";
 
-export default function FixReport() {
+export default function FixReportPage() {
   registerAllModules();
   const navigate = useNavigate();
   const hotRef = useRef(null);
-  const param = useParams();
+  const param = useParams().id;
   let hot;
-
+  // eslint-disable-next-line
   const [user, setUser] = useState(null);
   const [title, setTitle] = useState("");
   const [headers, setHeaders] = useState([
@@ -31,16 +30,12 @@ export default function FixReport() {
   }, []);
 
   useEffect(() => {
-    getReportDataDetail(param.id).then((data) => {
-      console.log(data);
-      console.log(data.data);
-      console.log(data.headers);
+    getReportDataDetail(param).then((data) => {
       setData(JSON.parse(data.data));
       setHeaders(data.headers);
       setTitle(data.title);
-      console.log(data.title);
     });
-  }, []);
+  }, [param]);
 
   const addRow = () => {
     const newRow = new Array(headers.length).fill("");
@@ -53,9 +48,9 @@ export default function FixReport() {
     hot = hotRef.current.hotInstance;
     console.log({ data: JSON.stringify(hot.getData()) });
     let data = JSON.stringify(hot.getData());
-    await addReport(headers, data, user, title).then(() => {
+    await updateReport(headers, data, title, param.id).then(() => {
       setTitle("");
-      navigate("/");
+      navigate(`/`);
     });
   };
 
@@ -70,6 +65,7 @@ export default function FixReport() {
           type="text"
           placeholder="제목"
           onChange={(e) => setTitle(e.target.value)}
+          value={title}
           required
         />
         <HotTable

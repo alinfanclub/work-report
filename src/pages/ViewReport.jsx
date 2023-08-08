@@ -9,21 +9,20 @@ export default function ViewReport() {
   const [headers, setHeaders] = useState([]);
   const [data, setData] = useState([]);
   const [title, setTitle] = useState("");
-  const param = useParams();
+  const [createdAt, setCreatedAt] = useState("");
+  const param = useParams().id;
   useEffect(() => {
-    getReportDataDetail(param.id).then((data) => {
-      console.log(data);
-      console.log(data.data);
-      console.log(data.headers);
+    getReportDataDetail(param).then((data) => {
       setData(JSON.parse(data.data));
       setHeaders(data.headers);
       setTitle(data.title);
-      console.log(data.title);
+      setCreatedAt(String(data.createdAt));
     });
-  }, []);
+  }, [param]);
   return (
     <div className="grow-[1]">
       <h1>{title && title}</h1>
+      <p>{createdAt && createdAt}</p>
       <HotTable
         id="hot"
         data={data && data}
@@ -44,7 +43,7 @@ export default function ViewReport() {
           Export CSV
         </CSVLink>
       )}
-      <Link to={`/reports/${param.id}/fix`}>fix</Link>
+      <Link to={`/reports/${param}/fix`}>fix</Link>
     </div>
   );
 }
