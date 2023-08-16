@@ -11,7 +11,7 @@ export default function NavBar() {
     });
   }, []);
   return (
-    <header className="flex flex-col min-w-[200px] justify-between bg-blue-500 items-center pt-4 pb-4 text-white">
+    <header className="flex flex-col min-w-[200px] justify-between bg-blue-500 items-center pt-4 pb-4 text-white sticky top-0 h-screen">
       <div className="flex flex-col gap-4 items-center">
         <div className="mb-10">
           <Link to="/">My Rveport</Link>

@@ -81,5 +81,9 @@ export async function updateReport(headers, data, title, reportId) {
     headers: headers,
     data: data,
     fix: true,
+    createdAt: new Intl.DateTimeFormat("ko", {
+      dateStyle: "full",
+      timeStyle: "short",
+    }).format(new Date()),
   });
 }

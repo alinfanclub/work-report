@@ -9,6 +9,7 @@ import LoginPage from "./pages/LoginPage";
 import CreateUser from "./pages/CreateUser";
 import ViewReport from "./pages/ViewReport";
 import FixReportPage from "./pages/FixReportPage";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const router = createBrowserRouter([
   {
@@ -44,9 +45,13 @@ const router = createBrowserRouter([
   },
 ]);
 
+const queryClient = new QueryClient();
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <RouterProvider router={router}>
-    <App />
-  </RouterProvider>
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router}>
+      <App />
+    </RouterProvider>
+  </QueryClientProvider>
 );

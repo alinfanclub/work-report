@@ -53,7 +53,7 @@ export default function WritePage() {
     <div className="grow-[1] p-4">
       <form
         onSubmit={(...arg) => saveClickCallback(...arg)}
-        className="flex flex-col gap-4 items-start"
+        className="flex flex-col gap-4 items-start "
       >
         <input
           type="text"
@@ -71,7 +71,8 @@ export default function WritePage() {
           fixedColumnsStart={1}
           licenseKey="non-commercial-and-evaluation"
           ref={hotRef}
-          rowHeights={40}
+          colWidths={`${window.innerWidth - 300}` / 7}
+          rowHeights={`${window.innerHeight - 300}` / 5}
           columns={[
             {
               type: "date",
@@ -107,6 +108,7 @@ export default function WritePage() {
           manualColumnResize={true}
           dropdownMenu={true}
           columnSorting={true}
+          className="htCenter htMiddle"
           // for non-commercial use only
         />
         <div className="flex gap-4">
