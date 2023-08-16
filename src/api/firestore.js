@@ -7,6 +7,8 @@ import {
   where,
   getDocs,
   updateDoc,
+  Timestamp,
+  serverTimestamp,
 } from "firebase/firestore";
 import { v1 as uuidv1 } from "uuid";
 
@@ -62,28 +64,22 @@ export async function addReport(headers, data, user, title) {
     headers: headers,
     data: data,
     userId: user.uid,
-    createdAt: new Intl.DateTimeFormat("ko", {
-      dateStyle: "full",
-      timeStyle: "short",
-    }).format(new Date()),
+    createdAt: serverTimestamp(),
     title: title,
     reportId: reportId,
     fix: false,
+    writer: user.displayName,
   });
 }
 
 export async function updateReport(headers, data, title, reportId) {
   const washingtonRef = doc(db, "reports", reportId);
 
-  // Set the "capital" field of the city 'DC'
   await updateDoc(washingtonRef, {
     title: title,
     headers: headers,
     data: data,
     fix: true,
-    createdAt: new Intl.DateTimeFormat("ko", {
-      dateStyle: "full",
-      timeStyle: "short",
-    }).format(new Date()),
+    createdAt: serverTimestamp(),
   });
 }

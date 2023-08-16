@@ -1,16 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { getReportDataDetail } from "../api/firestore";
 import { HotTable } from "@handsontable/react";
 import { CSVLink } from "react-csv";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-
+import { formatAgo } from "../utill/timeago";
+import timeStampFormat from "../utill/timeStampFormat";
+import Handsontable from "handsontable";
+import * as XLSX from "xlsx";
 export default function ViewReport() {
   const [headers, setHeaders] = useState([]);
   const [data, setData] = useState([]);
   const [title, setTitle] = useState("");
+
   const param = useParams().id;
+  const hotRef = useRef(null);
+  let hot;
   const {
     isLoading,
     isError,
@@ -25,6 +31,24 @@ export default function ViewReport() {
         return data;
       }),
   });
+
+  const exportToXLSX = () => {
+    // Get Handsontable instance
+    hot = hotRef.current.hotInstance;
+
+    // Get the data from Handsontable
+    const data = hot.getData();
+
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.aoa_to_sheet(data);
+
+    // Add the sheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, sheet, "Sheet1");
+
+    // Save the workbook to a file
+    XLSX.writeFile(workbook, `${title}.xlsx`);
+  };
   return (
     <div>
       {isError && (
@@ -41,23 +65,30 @@ export default function ViewReport() {
         <div className="grow-[1] flex flex-col gap-4 p-4">
           <h1 className="flex gap-4 items-end">
             {title && title}
-            <small>{tableData.createdAt}</small>
+            <small>{timeStampFormat(tableData.createdAt)}</small>
+            <small>
+              {formatAgo(timeStampFormat(tableData.createdAt), "ko")}
+            </small>
             {tableData.fix && <small>수정됨</small>}
           </h1>
-          <HotTable
-            id="hot"
-            data={data && data}
-            colHeaders={headers && headers}
-            rowHeaders={true}
-            manualColumnMove={true}
-            fixedColumnsStart={1}
-            className="htCenter htMiddle"
-            colWidths={`${window.innerWidth - 300}` / headers.length}
-            rowHeights={`${window.innerHeight - 200}` / 5}
-            licenseKey="non-commercial-and-evaluation"
-            readOnly={true}
-            // for non-commercial use only
-          />
+          <div className="h-[86vh] w-[87vw] overflow-hidden">
+            <HotTable
+              id="hot"
+              data={data && data}
+              colHeaders={headers && headers}
+              rowHeaders={true}
+              manualColumnMove={true}
+              fixedColumnsStart={1}
+              className="htCenter htMiddle"
+              colWidths={`${window.innerWidth - 300}` / headers.length}
+              rowHeights={`${window.innerHeight - 200}` / 5}
+              licenseKey="non-commercial-and-evaluation"
+              readOnly={true}
+              ref={hotRef}
+              // for non-commercial use only
+            />
+          </div>
+
           <div className="flex gap-4">
             {data.length > 0 && headers.length > 0 && (
               <CSVLink
@@ -69,6 +100,9 @@ export default function ViewReport() {
                 Export CSV
               </CSVLink>
             )}
+            <button className="btn_default" onClick={exportToXLSX}>
+              Export XLSX
+            </button>
             <Link to={`/reports/${param}/fix`} className="btn_default">
               fix
             </Link>
