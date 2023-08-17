@@ -226,39 +226,9 @@ export default function WritePage() {
             licenseKey="non-commercial-and-evaluation"
             ref={hotRef}
             colWidths={`${window.innerWidth - 300}` / 7}
-            rowHeights={`${window.innerHeight - 300}` / 5}
-            columns={[
-              {
-                type: "date",
-                dateFormat: "YY/MM/DD",
-                correctFormat: true,
-                defaultDate: new Intl.DateTimeFormat("ko", {
-                  dateStyle: "full",
-                  timeStyle: "short",
-                }).format(new Date()),
-                // datePicker additional options
-                // (see https://github.com/dbushell/Pikaday#configuration)
-                datePickerConfig: {
-                  // First day of the week (0: Sunday, 1: Monday, etc)
-                  firstDay: 0,
-                  showWeekNumber: true,
-                  licenseKey: "non-commercial-and-evaluation",
-                  disableDayFn(date) {
-                    // Disable Sunday and Saturday
-                    return date.getDay() === 0 || date.getDay() === 6;
-                  },
-                },
-              },
-              {
-                editor: "select",
-                selectOptions: ["요청", "GUI", "퍼블", "휴무", "기타"],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-            ]}
+            rowHeights={`${window.innerHeight - 300}` / 10}
+            //headers length 만큼  columns={[]}안에 {} 생성
+            columns={headers && headers.map((header) => ({ colHeaders: header }))}
             manualColumnResize={true}
             dropdownMenu={true}
             columnSorting={true}

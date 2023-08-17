@@ -43,10 +43,12 @@ export default function MainPage() {
                     </Link>
                   </td>
                   <td>
-                    <small>{timeStampFormat(report.createdAt)}</small>
-                    <small>
-                      {formatAgo(timeStampFormat(report.createdAt), "ko")}
-                    </small>
+                    <div  className='flex gap-2'>
+                      <small>{timeStampFormat(report.createdAt)}</small>
+                      <small>
+                        {formatAgo(timeStampFormat(report.createdAt), "ko")}
+                      </small>
+                    </div>
                   </td>
                 </tr>
               ))}
