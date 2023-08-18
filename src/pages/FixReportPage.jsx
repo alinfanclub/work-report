@@ -15,7 +15,7 @@ export default function FixReportPage() {
   let hot;
   // eslint-disable-next-line
   const [user, setUser] = useState(null);
-  const [headers, setHeaders] = useState([]);
+  const [headers, setHeaders] = useState();
   const [data, setData] = useState([]);
   const [title, setTitle] = useState("");
 
@@ -27,18 +27,21 @@ export default function FixReportPage() {
     queryKey: ["report", param],
     queryFn: () =>
       getReportDataDetail(param).then((data) => {
-        const newHeaders = JSON.parse(data.data)[0];
+        // const newHeaders = JSON.parse(data.data)[0];
 
-        // 그리고null 은 ""으로 바꿔야함
-        const newHeaders2 = newHeaders.map((header) => {
-          if(header === null) {
-            return "";
-          } else {
-            return header;
-          }
-        })
-        setData(data.headers !== null ? JSON.parse(data.data) : JSON.parse(data.data).slice(1) );
-        setHeaders(data.headers !== null ? data.headers : newHeaders2);
+        // // 그리고null 은 ""으로 바꿔야함
+        // const newHeaders2 = newHeaders.map((header) => {
+        //   if(header === null) {
+        //     return "";
+        //   } else {
+        //     return header;
+        //   }
+        // })
+        setData(data.headers ? Array(data.headers).concat(JSON.parse(data.data)).slice(1)  : Array(data.headers).concat(JSON.parse(data.data)));
+        setHeaders(data.headers ? data.headers : Array(data.headers).concat(JSON.parse(data.data))[0])
+        console.log(data.headers)
+        console.log(Array(data.headers).concat(JSON.parse(data.data)));
+        
         setTitle(data.title);
         return data;
       }),
@@ -50,17 +53,18 @@ export default function FixReportPage() {
     });
   }, []);
 
-  const addRow = () => {
-    const newRow = new Array(headers.length).fill("");
-    hot = hotRef.current.hotInstance;
-    hot.alter("insert_row_below", hot.countRows(), 1, newRow);
-  };
+  // const addRow = () => {
+  //   const newRow = new Array(headers.length).fill("");
+  //   hot = hotRef.current.hotInstance;
+  //   hot.alter("insert_row_below", hot.countRows(), 1, newRow);
+  // };
 
   const saveClickCallback = async (e) => {
     e.preventDefault();
     hot = hotRef.current.hotInstance;
     console.log({ data: JSON.stringify(hot.getData()) });
     let data = JSON.stringify(hot.getData());
+    setHeaders(data[0])
     await updateReport(headers, data, title, param).then(() => {
       setTitle("");
       navigate(`/reports/${param}`);
@@ -78,6 +82,18 @@ export default function FixReportPage() {
     const hot = hotRef.current.hotInstance;
     hot.scrollViewportTo(0, 0);
     // hot.scrollViewportTo(0,0);
+  };
+  const exclude = () => {
+    const handsontableInstance = hotRef.current.hotInstance;
+    const lastRowIndex = handsontableInstance.countRows() - 1;
+
+    // after each sorting, take row 1 and change its index to 0
+    handsontableInstance.rowIndexMapper.moveIndexes(handsontableInstance.toVisualRow(0), 0);
+    // after each sorting, take row 16 and change its index to 15
+    handsontableInstance.rowIndexMapper.moveIndexes(
+      handsontableInstance.toVisualRow(lastRowIndex),
+      lastRowIndex
+    );
   };
 
   return (
@@ -112,7 +128,7 @@ export default function FixReportPage() {
             <HotTable
               id="hot"
               data={data && data}
-              colHeaders={headers}
+              colHeaders={true}
               ref={hotRef}
               contextMenu={true}
               rowHeaders={true}
@@ -120,12 +136,14 @@ export default function FixReportPage() {
               fixedColumnsStart={1}
               className="htCenter htMiddle"
               licenseKey="non-commercial-and-evaluation"
-              colWidths={`${window.innerWidth - 300}` / headers.length}
+              colWidths={`${window.innerWidth - 300}` / JSON.parse(tableData.data)[0].length}
               rowHeights={`${window.innerHeight - 200}` / 10}
-              columns={headers && headers.map((header) => ({ colHeaders: header }))}
+              // columns={headers && headers.map((header) => ({ colHeaders: header }))}
               manualColumnResize={true}
               dropdownMenu={true}
               columnSorting={true}
+              afterColumnSort={exclude}
+              
               // for non-commercial use only
             />
           </div>
@@ -134,9 +152,9 @@ export default function FixReportPage() {
             <button type="submit" className="btn_default">
               save
             </button>
-            <button onClick={addRow} type="button" className="btn_default">
+            {/* <button onClick={addRow} type="button" className="btn_default">
               addRow
-            </button>
+            </button> */}
           </div>
           <div className='flex gap-2'>
             <div onClick={() => scrollToTop()}>

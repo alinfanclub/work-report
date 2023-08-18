@@ -33,7 +33,7 @@ export default function ViewReport() {
             return header;
           }
         })
-        setData(data.headers !== null ? JSON.parse(data.data) : JSON.parse(data.data).slice(1) );
+        setData(data.headers !== null ? JSON.parse(data.data).slice(1) : JSON.parse(data.data).slice(1) );
         setHeaders(data.headers !== null ? data.headers : newHeaders2);
         setTitle(data.title);
         // data.data 를 JSON.parse(data.data) 로 바꿔야함 
@@ -131,7 +131,7 @@ export default function ViewReport() {
               manualColumnMove={true}
               fixedColumnsStart={1}
               className="htCenter htMiddle"
-              colWidths={`${headers ? (window.innerWidth - 300) / headers.length : null}`}
+              colWidths={`${window.innerWidth - 300}` / JSON.parse(tableData.data)[0].length}
               rowHeights={`${window.innerHeight - 200}` / 10}
               licenseKey="non-commercial-and-evaluation"
               readOnly={true}
