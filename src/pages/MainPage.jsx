@@ -3,7 +3,7 @@ import { getReportData } from "../api/firestore";
 import { onUserStateChanged } from "../api/firebase";
 import { Link } from "react-router-dom";
 import { formatAgo } from "../utill/timeago";
-import timeStampFormat from "../utill/timeStampFormat";
+import { timeStampFormat } from "../utill/timeStampFormat";
 
 export default function MainPage() {
   const [user, setUser] = useState(null);

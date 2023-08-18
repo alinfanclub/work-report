@@ -7,8 +7,8 @@ import {
   where,
   getDocs,
   updateDoc,
-  Timestamp,
   serverTimestamp,
+  deleteDoc,
 } from "firebase/firestore";
 import { v1 as uuidv1 } from "uuid";
 
@@ -82,4 +82,8 @@ export async function updateReport(headers, data, title, reportId) {
     fix: true,
     createdAt: serverTimestamp(),
   });
+}
+
+export async function deleteReport(reportId) {
+  await deleteDoc(doc(db, "reports", reportId));
 }

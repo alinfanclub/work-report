@@ -5,7 +5,7 @@ import { getReportDataDetail, updateReport } from "../api/firestore";
 import { onUserStateChanged } from "../api/firebase";
 import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import timeStampFormat from "../utill/timeStampFormat";
+import {timeStampFormat} from "../utill/timeStampFormat";
 
 export default function FixReportPage() {
   registerAllModules();
@@ -57,9 +57,18 @@ export default function FixReportPage() {
     });
   };
 
-  // const gatData = () => {
-  //   (...args) => saveClickCallback(...args)
-  // }
+  //scrollViewportTo
+  const scrollToBottom = () => {
+    const hot = hotRef.current.hotInstance;
+    hot.scrollViewportTo(hot.countRows() - 1, hot.countCols() - 1);
+    // hot.scrollViewportTo(0,0);
+  };
+
+  const scrollToTop = () => {
+    const hot = hotRef.current.hotInstance;
+    hot.scrollViewportTo(0, 0);
+    // hot.scrollViewportTo(0,0);
+  };
 
   return (
     <div>
@@ -110,6 +119,7 @@ export default function FixReportPage() {
               // for non-commercial use only
             />
           </div>
+          <div className='flex justify-between'>
           <div className="flex gap-4">
             <button type="submit" className="btn_default">
               save
@@ -117,6 +127,15 @@ export default function FixReportPage() {
             <button onClick={addRow} type="button" className="btn_default">
               addRow
             </button>
+          </div>
+          <div className='flex gap-2'>
+            <div onClick={() => scrollToTop()}>
+              위로
+            </div>
+            <div onClick={() => scrollToBottom()} className="">
+                아래로
+            </div>
+          </div>
           </div>
         </form>
       )}
