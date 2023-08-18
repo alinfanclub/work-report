@@ -4,7 +4,6 @@ import { registerAllModules } from "handsontable/registry";
 import { addReport } from "../api/firestore";
 import { onUserStateChanged } from "../api/firebase";
 import { useNavigate } from "react-router";
-import { AiFillCheckSquare, AiOutlineCheckSquare } from "react-icons/ai";
 import * as XLSX from "xlsx";
 
 export default function WritePage() {
@@ -16,11 +15,9 @@ export default function WritePage() {
   const [user, setUser] = useState(null);
   const [title, setTitle] = useState("");
   // eslint-disable-next-line
-  const [headers, setHeaders] = useState(null);
   // eslint-disable-next-line
   const [data, setData] = useState();
   const [addXelx, setAddXelx] = useState(false);
-  const [useTemplete, setUseTemplete] = useState(false);
   const [addCSV, setAddCSV] = useState(false);
 
   useEffect(() => {
@@ -29,18 +26,12 @@ export default function WritePage() {
     });
   }, []);
 
-  const addRow = () => {
-    const newRow = new Array(headers.length).fill("");
-    hot = hotRef.current.hotInstance;
-    hot.alter("insert_row_below", hot.countRows(), 1, newRow);
-  };
-
   const saveClickCallback = async (e) => {
     e.preventDefault();
     hot = hotRef.current.hotInstance;
     console.log({ data: JSON.stringify(hot.getData()) });
     let data = JSON.stringify(hot.getData());
-    await addReport(headers, data, user, title).then(() => {
+    await addReport(data, user, title).then(() => {
       setTitle("");
       navigate("/");
     });
@@ -75,9 +66,7 @@ export default function WritePage() {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-        setHeaders(jsonData[0]);
-        setData(jsonData.slice(1));
+        setData(jsonData);
       };
       reader.readAsArrayBuffer(file);
     }
@@ -157,29 +146,24 @@ export default function WritePage() {
       console.log(spt);
       obj.push(spt);
     }
-    const objHeaders = obj[0];
-    const objData = obj.slice(1);
-    setHeaders(objHeaders);
-    setData(objData);
+    setData(obj);
     return;
   };
 
-  const hadleuseTemplete = () => {
-    if (!useTemplete) {
-      setHeaders([
-        "날짜",
-        "분류",
-        "요청자",
-        "내용",
-        "작업자",
-        "전달방식",
-        "관련 파일명",
-      ]);
-      setUseTemplete(true);
-    } else {
-      setHeaders();
-      setUseTemplete(false);
-    }
+  const exclude = () => {
+    const handsontableInstance = hotRef.current.hotInstance;
+    const lastRowIndex = handsontableInstance.countRows() - 1;
+
+    // after each sorting, take row 1 and change its index to 0
+    handsontableInstance.rowIndexMapper.moveIndexes(
+      handsontableInstance.toVisualRow(0),
+      0
+    );
+    // after each sorting, take row 16 and change its index to 15
+    handsontableInstance.rowIndexMapper.moveIndexes(
+      handsontableInstance.toVisualRow(lastRowIndex),
+      lastRowIndex
+    );
   };
 
   return (
@@ -196,22 +180,7 @@ export default function WritePage() {
             required
             className=" max-w-[300px] "
           />
-          <div>
-            <input
-              type="checkbox"
-              id="useTemplete"
-              className="hidden"
-              onChange={() => hadleuseTemplete()}
-            />
-            <label htmlFor="useTemplete" className="flex items-center gap-2">
-              <p>템플릿 사용</p>
-              {useTemplete ? (
-                <AiFillCheckSquare className="text-blue-700" />
-              ) : (
-                <AiOutlineCheckSquare />
-              )}
-            </label>
-          </div>
+          <div></div>
         </div>
         <div className="h-[74vh] w-[87vw] overflow-hidden">
           <HotTable
@@ -219,7 +188,7 @@ export default function WritePage() {
             data={data && data}
             contextMenu={true}
             // colHeaders={headers}
-            colHeaders={headers ? headers : true}
+            colHeaders={true}
             rowHeaders={true}
             manualColumnMove={true}
             fixedColumnsStart={1}
@@ -228,21 +197,17 @@ export default function WritePage() {
             colWidths={`${window.innerWidth - 300}` / 7}
             rowHeights={`${window.innerHeight - 300}` / 10}
             //headers length 만큼  columns={[]}안에 {} 생성
-            columns={headers && headers.map((header) => ({ colHeaders: header }))}
             manualColumnResize={true}
             dropdownMenu={true}
             columnSorting={true}
             className="htCenter htMiddle"
+            afterColumnSort={exclude}
             // for non-commercial use only
           />
         </div>
         <div className="flex gap-4">
           <button type="submit" className="btn_default">
             save
-          </button>
-
-          <button onClick={addRow} type="button" className="btn_default">
-            addRow
           </button>
           <button
             className="btn_default"

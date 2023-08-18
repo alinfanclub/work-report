@@ -5,7 +5,7 @@ import { getReportDataDetail, updateReport } from "../api/firestore";
 import { onUserStateChanged } from "../api/firebase";
 import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import {timeStampFormat} from "../utill/timeStampFormat";
+import { timeStampFormat } from "../utill/timeStampFormat";
 
 export default function FixReportPage() {
   registerAllModules();
@@ -15,8 +15,7 @@ export default function FixReportPage() {
   let hot;
   // eslint-disable-next-line
   const [user, setUser] = useState(null);
-  const [headers, setHeaders] = useState();
-  const [data, setData] = useState([]);
+  const [cell, setCell] = useState([]);
   const [title, setTitle] = useState("");
 
   const {
@@ -37,11 +36,11 @@ export default function FixReportPage() {
         //     return header;
         //   }
         // })
-        setData(data.headers ? Array(data.headers).concat(JSON.parse(data.data)).slice(1)  : Array(data.headers).concat(JSON.parse(data.data)));
-        setHeaders(data.headers ? data.headers : Array(data.headers).concat(JSON.parse(data.data))[0])
-        console.log(data.headers)
+        setCell(JSON.parse(data.data));
+        // setHeaders(Array(data.headers).concat(JSON.parse(data.data))[0]);
+        console.log(data.headers);
         console.log(Array(data.headers).concat(JSON.parse(data.data)));
-        
+
         setTitle(data.title);
         return data;
       }),
@@ -64,8 +63,7 @@ export default function FixReportPage() {
     hot = hotRef.current.hotInstance;
     console.log({ data: JSON.stringify(hot.getData()) });
     let data = JSON.stringify(hot.getData());
-    setHeaders(data[0])
-    await updateReport(headers, data, title, param).then(() => {
+    await updateReport(data, title, param).then(() => {
       setTitle("");
       navigate(`/reports/${param}`);
     });
@@ -88,7 +86,10 @@ export default function FixReportPage() {
     const lastRowIndex = handsontableInstance.countRows() - 1;
 
     // after each sorting, take row 1 and change its index to 0
-    handsontableInstance.rowIndexMapper.moveIndexes(handsontableInstance.toVisualRow(0), 0);
+    handsontableInstance.rowIndexMapper.moveIndexes(
+      handsontableInstance.toVisualRow(0),
+      0
+    );
     // after each sorting, take row 16 and change its index to 15
     handsontableInstance.rowIndexMapper.moveIndexes(
       handsontableInstance.toVisualRow(lastRowIndex),
@@ -127,7 +128,7 @@ export default function FixReportPage() {
           <div className="h-[86vh] w-[87vw] overflow-hidden">
             <HotTable
               id="hot"
-              data={data && data}
+              data={cell}
               colHeaders={true}
               ref={hotRef}
               contextMenu={true}
@@ -136,34 +137,35 @@ export default function FixReportPage() {
               fixedColumnsStart={1}
               className="htCenter htMiddle"
               licenseKey="non-commercial-and-evaluation"
-              colWidths={`${window.innerWidth - 300}` / JSON.parse(tableData.data)[0].length}
+              colWidths={
+                `${window.innerWidth - 300}` /
+                JSON.parse(tableData.data)[0].length
+              }
               rowHeights={`${window.innerHeight - 200}` / 10}
               // columns={headers && headers.map((header) => ({ colHeaders: header }))}
               manualColumnResize={true}
               dropdownMenu={true}
               columnSorting={true}
               afterColumnSort={exclude}
-              
+
               // for non-commercial use only
             />
           </div>
-          <div className='flex justify-between'>
-          <div className="flex gap-4">
-            <button type="submit" className="btn_default">
-              save
-            </button>
-            {/* <button onClick={addRow} type="button" className="btn_default">
+          <div className="flex justify-between">
+            <div className="flex gap-4">
+              <button type="submit" className="btn_default">
+                save
+              </button>
+              {/* <button onClick={addRow} type="button" className="btn_default">
               addRow
             </button> */}
-          </div>
-          <div className='flex gap-2'>
-            <div onClick={() => scrollToTop()}>
-              위로
             </div>
-            <div onClick={() => scrollToBottom()} className="">
+            <div className="flex gap-2">
+              <div onClick={() => scrollToTop()}>위로</div>
+              <div onClick={() => scrollToBottom()} className="">
                 아래로
+              </div>
             </div>
-          </div>
           </div>
         </form>
       )}

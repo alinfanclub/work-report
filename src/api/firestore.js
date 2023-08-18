@@ -58,10 +58,9 @@ export async function getReportDataDetail(params) {
   return data;
 }
 
-export async function addReport(headers, data, user, title) {
+export async function addReport(data, user, title) {
   const reportId = uuidv1();
   await setDoc(doc(db, "reports", reportId), {
-    headers: headers,
     data: data,
     userId: user.uid,
     createdAt: serverTimestamp(),
@@ -72,12 +71,11 @@ export async function addReport(headers, data, user, title) {
   });
 }
 
-export async function updateReport(headers, data, title, reportId) {
+export async function updateReport(data, title, reportId) {
   const washingtonRef = doc(db, "reports", reportId);
 
   await updateDoc(washingtonRef, {
     title: title,
-    headers: headers,
     data: data,
     fix: true,
     createdAt: serverTimestamp(),

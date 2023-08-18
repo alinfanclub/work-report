@@ -6,7 +6,10 @@ import { CSVLink } from "react-csv";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { formatAgo } from "../utill/timeago";
-import {timeStampFormat, timeStampFormatNotHour} from "../utill/timeStampFormat";
+import {
+  timeStampFormat,
+  timeStampFormatNotHour,
+} from "../utill/timeStampFormat";
 export default function ViewReport() {
   const [headers, setHeaders] = useState([]);
   const [data, setData] = useState([]);
@@ -22,23 +25,22 @@ export default function ViewReport() {
     queryKey: ["report", param],
     queryFn: () =>
       getReportDataDetail(param).then((data) => {
-
         const newHeaders = JSON.parse(data.data)[0];
 
         // 그리고null 은 ""으로 바꿔야함
         const newHeaders2 = newHeaders.map((header) => {
-          if(header === null) {
+          if (header === null) {
             return "";
           } else {
             return header;
           }
-        })
-        setData(data.headers !== null ? JSON.parse(data.data).slice(1) : JSON.parse(data.data).slice(1) );
-        setHeaders(data.headers !== null ? data.headers : newHeaders2);
+        });
+        setData(JSON.parse(data.data).slice(1));
+        setHeaders(newHeaders2);
         setTitle(data.title);
-        // data.data 를 JSON.parse(data.data) 로 바꿔야함 
-        console.log(JSON.parse(data.data)[0])
-        console.log()
+        // data.data 를 JSON.parse(data.data) 로 바꿔야함
+        console.log(JSON.parse(data.data)[0]);
+        console.log();
         return data;
       }),
   });
@@ -55,8 +57,6 @@ export default function ViewReport() {
     hot.scrollViewportTo(0, 0);
     // hot.scrollViewportTo(0,0);
   };
- 
-
 
   // const exportToXLSX = () => {
   //   // Get the current sheet
@@ -67,12 +67,11 @@ export default function ViewReport() {
   //   const modifiedData = data.map(row => row.map(cell => cell && cell.replace(/\n/g, String.fromCharCode(10))));
   //   // Create a new workbook
   //   const workbook = XLSX.utils.book_new();
-    
+
   //   const sheet = XLSX.utils.aoa_to_sheet(modifiedData);
 
   //   // Add the sheet to the workbook
   //   XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1');
-
 
   //   // Set auto width for columns
   //   const ws = workbook.Sheets.Sheet1;
@@ -81,21 +80,20 @@ export default function ViewReport() {
   //   });
 
   //   ws['!cols'] =  colWidths;
-    
-        
+
   //   // Save the workbook to a file
   // XLSX.writeFile(workbook, `${title}.xlsx`);
   // };
 
   const handleDelete = async () => {
-    if(window.confirm("삭제하시겠습니까?") ) {
+    if (window.confirm("삭제하시겠습니까?")) {
       await deleteReport(param).then(() => {
         window.location.href = "/";
-      })
+      });
     } else {
       return false;
     }
-  }
+  };
 
   return (
     <div>
@@ -111,7 +109,7 @@ export default function ViewReport() {
       )}
       {tableData && (
         <div className="grow-[1] flex flex-col gap-4 p-4">
-          <div className='flex justify-between'>
+          <div className="flex justify-between">
             <h1 className="flex gap-4 items-end">
               {title && title}
               <small>{timeStampFormat(tableData.createdAt)}</small>
@@ -120,7 +118,9 @@ export default function ViewReport() {
               </small>
               {tableData.fix && <small>수정됨</small>}
             </h1>
-            <button type="button" onClick={() => handleDelete()} >삭제</button>
+            <button type="button" onClick={() => handleDelete()}>
+              삭제
+            </button>
           </div>
           <div className="h-[86vh] w-[87vw] overflow-hidden reportTable relative">
             <HotTable
@@ -131,7 +131,10 @@ export default function ViewReport() {
               manualColumnMove={true}
               fixedColumnsStart={1}
               className="htCenter htMiddle"
-              colWidths={`${window.innerWidth - 300}` / JSON.parse(tableData.data)[0].length}
+              colWidths={
+                `${window.innerWidth - 300}` /
+                JSON.parse(tableData.data)[0].length
+              }
               rowHeights={`${window.innerHeight - 200}` / 10}
               licenseKey="non-commercial-and-evaluation"
               readOnly={true}
@@ -140,41 +143,41 @@ export default function ViewReport() {
             />
           </div>
 
-         <div className='flex justify-between'>
-         <div className="flex gap-4">
-            {data.length > 0 && (
-              <CSVLink
-                data={data}
-                headers={headers}
-                filename={`${title}_${timeStampFormatNotHour(tableData.createdAt)}.csv`}
-                className="btn_default"
-                onClick={() => {
-                  if(window.confirm("CSV 파일을 다운로드 하시겠습니까?") ) {
-                    return true;
-                  } else {
-                    return false;
-                  }
-                }}
-              >
-                Export CSV
-              </CSVLink>
-            )}
-            {/* <button className="btn_default" onClick={exportToXLSX}>
+          <div className="flex justify-between">
+            <div className="flex gap-4">
+              {data.length > 0 && (
+                <CSVLink
+                  data={data}
+                  headers={headers}
+                  filename={`${title}_${timeStampFormatNotHour(
+                    tableData.createdAt
+                  )}.csv`}
+                  className="btn_default"
+                  onClick={() => {
+                    if (window.confirm("CSV 파일을 다운로드 하시겠습니까?")) {
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  }}
+                >
+                  Export CSV
+                </CSVLink>
+              )}
+              {/* <button className="btn_default" onClick={exportToXLSX}>
               Export XLSX
             </button> */}
-            <Link to={`/reports/${param}/fix`} className="btn_default"  >
-              fix
-            </Link>
-          </div>
-          <div className='flex gap-2'>
-            <div onClick={() => scrollToTop()}>
-              위로
+              <Link to={`/reports/${param}/fix`} className="btn_default">
+                fix
+              </Link>
             </div>
-            <div onClick={() => scrollToBottom()} className="">
+            <div className="flex gap-2">
+              <div onClick={() => scrollToTop()}>위로</div>
+              <div onClick={() => scrollToBottom()} className="">
                 아래로
+              </div>
             </div>
           </div>
-         </div>
         </div>
       )}
     </div>
