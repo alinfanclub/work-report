@@ -27,8 +27,18 @@ export default function FixReportPage() {
     queryKey: ["report", param],
     queryFn: () =>
       getReportDataDetail(param).then((data) => {
-        setData(JSON.parse(data.data));
-        setHeaders(data.headers);
+        const newHeaders = JSON.parse(data.data)[0];
+
+        // 그리고null 은 ""으로 바꿔야함
+        const newHeaders2 = newHeaders.map((header) => {
+          if(header === null) {
+            return "";
+          } else {
+            return header;
+          }
+        })
+        setData(data.headers !== null ? JSON.parse(data.data) : JSON.parse(data.data).slice(1) );
+        setHeaders(data.headers !== null ? data.headers : newHeaders2);
         setTitle(data.title);
         return data;
       }),
