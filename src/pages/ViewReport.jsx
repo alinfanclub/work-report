@@ -22,9 +22,23 @@ export default function ViewReport() {
     queryKey: ["report", param],
     queryFn: () =>
       getReportDataDetail(param).then((data) => {
-        setData(JSON.parse(data.data));
-        setHeaders(data.headers);
+
+        const newHeaders = JSON.parse(data.data)[0];
+
+        // 그리고null 은 ""으로 바꿔야함
+        const newHeaders2 = newHeaders.map((header) => {
+          if(header === null) {
+            return "";
+          } else {
+            return header;
+          }
+        })
+        setData(data.headers !== null ? JSON.parse(data.data) : JSON.parse(data.data).slice(1) );
+        setHeaders(data.headers !== null ? data.headers : newHeaders2);
         setTitle(data.title);
+        // data.data 를 JSON.parse(data.data) 로 바꿔야함 
+        console.log(JSON.parse(data.data)[0])
+        console.log()
         return data;
       }),
   });
@@ -117,7 +131,7 @@ export default function ViewReport() {
               manualColumnMove={true}
               fixedColumnsStart={1}
               className="htCenter htMiddle"
-              colWidths={`${window.innerWidth - 300}` / headers.length}
+              colWidths={`${headers ? (window.innerWidth - 300) / headers.length : null}`}
               rowHeights={`${window.innerHeight - 200}` / 10}
               licenseKey="non-commercial-and-evaluation"
               readOnly={true}
@@ -128,7 +142,7 @@ export default function ViewReport() {
 
          <div className='flex justify-between'>
          <div className="flex gap-4">
-            {data.length > 0 && headers.length > 0 && (
+            {data.length > 0 && (
               <CSVLink
                 data={data}
                 headers={headers}
