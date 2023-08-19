@@ -21,9 +21,10 @@ export default function MainPage() {
       });
   }, [user]);
   return (
-    <div className="grow-[1] p-4">
-      <div className="flex gap-4">
-        <table>
+    <div className="w-full relative h-screen p-10">
+      <div className="flex gap-8 mx-auto w-fit flex-col items-center">
+        <h1>{user && user.displayName}</h1>
+        <table className="">
           <thead>
             <tr>
               <th>No.</th>
@@ -43,7 +44,7 @@ export default function MainPage() {
                     </Link>
                   </td>
                   <td>
-                    <div  className='flex gap-2'>
+                    <div className="flex gap-2">
                       <small>{timeStampFormat(report.createdAt)}</small>
                       <small>
                         {formatAgo(timeStampFormat(report.createdAt), "ko")}
