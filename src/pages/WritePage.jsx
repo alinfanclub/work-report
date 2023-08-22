@@ -17,8 +17,6 @@ export default function WritePage() {
   // eslint-disable-next-line
   // eslint-disable-next-line
   const [data, setData] = useState();
-  const [addXelx, setAddXelx] = useState(false);
-  const [addCSV, setAddCSV] = useState(false);
 
   useEffect(() => {
     onUserStateChanged((user) => {
@@ -37,24 +35,6 @@ export default function WritePage() {
     });
   };
 
-  const DELIMITER = ",";
-  const APOSTROPHE = '"';
-
-  const fileUpload = (e) => {
-    e.preventDefault();
-    let file = e.target.files[0];
-    if (file === undefined) return;
-    let fileReader = new FileReader();
-    fileReader.readAsText(file, "UTF-8");
-    fileReader.onload = (e) => {
-      // setData(e.target.result);
-      parsingCsv(fileReader.result);
-
-      console.log(fileReader.result);
-    };
-  };
-
-  //
   //
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -70,84 +50,6 @@ export default function WritePage() {
       };
       reader.readAsArrayBuffer(file);
     }
-  };
-
-  // const handleOnDrop = (e, setState, csvObject) => {
-  //   e.preventDefault();
-
-  //   let file = e.dataTransfer.files[0];
-  //   let fileReader = new FileReader();
-
-  //   fileReader.readAsText(file, "utf-8"); // or euc-kr
-
-  //   fileReader.onload = function () {
-  //     //console.log(fileReader.result);
-  //     parsingCsv(fileReader.result, csvObject);
-  //     return;
-  //   };
-
-  //   setState(false);
-  //   return false;
-  // };
-
-  // const handleUpload = (e, csvObject) => {
-  //   let file = e.target.files[0];
-  //   let fileReader = new FileReader();
-
-  //   if (file === undefined) return; /* 방어 코드 추가 */
-
-  //   fileReader.readAsText(file, "utf-8"); // or euc-kr
-
-  //   fileReader.onload = function () {
-  //     //console.log(fileReader.result);
-  //     parsingCsv(fileReader.result, csvObject);
-  //   };
-  // };
-
-  const mySplit = (line, delimiter, ignore) => {
-    let spt = [];
-    let tmp = "";
-    let flag = false;
-
-    for (let i = 0; i < line.length; i++) {
-      if (ignore === line[i] && flag === true) {
-        flag = false;
-        continue;
-      } else if (ignore === line[i]) {
-        flag = true;
-        continue;
-      }
-
-      if (line[i] === delimiter && flag === false) {
-        spt.push(tmp);
-        tmp = "";
-
-        continue;
-      }
-
-      tmp += line[i];
-    }
-
-    spt.push(tmp);
-
-    return spt;
-  };
-
-  const parsingCsv = (file) => {
-    let obj = [];
-
-    let sptLine = file.split(/\r\n|\n/);
-    console.log(sptLine);
-
-    for (let line of sptLine) {
-      if (line === "") continue;
-
-      let spt = mySplit(line, DELIMITER, APOSTROPHE);
-      console.log(spt);
-      obj.push(spt);
-    }
-    setData(obj);
-    return;
   };
 
   const exclude = () => {
@@ -191,11 +93,15 @@ export default function WritePage() {
             colHeaders={true}
             rowHeaders={true}
             manualColumnMove={true}
-            fixedColumnsStart={1}
+            fixedColumnsStart={document.body.clientWidth > 1024 ? 1 : null}
             licenseKey="non-commercial-and-evaluation"
             ref={hotRef}
-            colWidths={`${window.innerWidth - 300}` / 7}
-            rowHeights={`${window.innerHeight - 300}` / 10}
+            colWidths={
+              document.body.clientWidth > 1024
+                ? document.body.clientWidth / 7
+                : (document.body.clientWidth / 3)
+            }
+            rowHeights={`${window.innerHeight - 200}` / 10}
             //headers length 만큼  columns={[]}안에 {} 생성
             manualColumnResize={true}
             dropdownMenu={true}
@@ -209,34 +115,20 @@ export default function WritePage() {
           <button type="submit" className="btn_default">
             save
           </button>
-          <button
+          <label
             className="btn_default"
-            onClick={() => setAddXelx(!addXelx)}
             type="button"
-          >{`엑셀 파일 업로드`}</button>
-          <button
-            className="btn_default"
-            onClick={() => setAddCSV(!addCSV)}
-            type="button"
-          >{`CSV 파일 업로드`}</button>
+            htmlFor="file"
+          >{`엑셀, csv 파일 업로드`}
+          <input
+          type="file"
+          id="file"
+          accept=".xlsx, .csv"
+          onChange={(e) => handleFileUpload(e)}
+          className="mt-4 hidden "
+        /></label>
         </div>
       </form>
-      {addXelx && (
-        <input
-          type="file"
-          accept=".xlsx"
-          onChange={(e) => handleFileUpload(e)}
-          className="mt-4"
-        />
-      )}
-      {addCSV && (
-        <input
-          type="file"
-          accept=".csv"
-          onChange={(e) => fileUpload(e)}
-          className="mt-4"
-        />
-      )}
     </div>
   );
 }

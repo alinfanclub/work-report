@@ -15,15 +15,15 @@ export default function NavBar() {
     <header
       className={`fixed z-[9999] top-0 ${
         menunOpen ? "left-0" : "-left-full"
-      } transition-all`}
+      } transition-all xl:relative xl:left-0 xl:top-0 xl:transition-none xl:z-0`}
     >
       <nav className=" flex flex-col min-w-[200px] w-full justify-between bg-blue-500 items-center pt-4 pb-4 text-white h-screen z-[9999]">
         <div className="flex flex-col gap-4 items-center">
           <div className="mb-10">
-            <Link to="/">My Report Project</Link>
+            <Link to="/" onClick={() => setMenunOpen(!menunOpen)}>My Report Project</Link>
           </div>
-          <Link to="/">Home</Link>
-          <Link to="/write">write</Link>
+          <Link to="/" onClick={() => setMenunOpen(!menunOpen)}>Home</Link>
+          <Link to="/write" onClick={() => setMenunOpen(!menunOpen)}>write</Link>
         </div>
 
         {user && (
@@ -37,7 +37,7 @@ export default function NavBar() {
         )}
       </nav>
       <div
-        className="fixed bottom-10 right-10"
+        className="fixed bottom-10 right-10 xl:hidden z-[9999]"
         onClick={() => setMenunOpen(!menunOpen)}
       >
         menun

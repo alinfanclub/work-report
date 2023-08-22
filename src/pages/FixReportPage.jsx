@@ -44,6 +44,7 @@ export default function FixReportPage() {
         setTitle(data.title);
         return data;
       }),
+      refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
@@ -72,7 +73,7 @@ export default function FixReportPage() {
   //scrollViewportTo
   const scrollToBottom = () => {
     const hot = hotRef.current.hotInstance;
-    hot.scrollViewportTo(hot.countRows() - 1, hot.countCols() - 1);
+    hot.scrollViewportTo(hot.countRows() - 1, 0);
     // hot.scrollViewportTo(0,0);
   };
 
@@ -98,7 +99,7 @@ export default function FixReportPage() {
   };
 
   return (
-    <div>
+    <div className='min-h-screen grow'>
       {isError && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           에러가 발생했습니다.
@@ -112,7 +113,7 @@ export default function FixReportPage() {
       {tableData && (
         <form
           onSubmit={(...arg) => saveClickCallback(...arg)}
-          className="flex flex-col gap-4 grow-[1] p-4"
+          className="flex flex-col gap-4 p-4 w-full h-full"
         >
           <div className="flex gap-2 items-end">
             <input
@@ -125,7 +126,7 @@ export default function FixReportPage() {
             />
             <small>{timeStampFormat(tableData.createdAt)}</small>
           </div>
-          <div className="h-[86vh] w-[87vw] overflow-hidden">
+          <div className="xl:w-full overflow-hidden reportTable relative flex-grow h-full">
             <HotTable
               id="hot"
               data={cell}
@@ -134,12 +135,14 @@ export default function FixReportPage() {
               contextMenu={true}
               rowHeaders={true}
               manualColumnMove={true}
-              fixedColumnsStart={1}
+              fixedColumnsStart={document.body.clientWidth > 1024 ? 1 : null}
               className="htCenter htMiddle"
               licenseKey="non-commercial-and-evaluation"
               colWidths={
-                `${window.innerWidth - 300}` /
-                JSON.parse(tableData.data)[0].length
+                document.body.clientWidth > 1024
+                  ?   `${window.innerWidth - 300}` /
+                  JSON.parse(tableData.data)[0].length
+                  : (document.body.clientWidth / 3) * 2
               }
               rowHeights={`${window.innerHeight - 200}` / 10}
               // columns={headers && headers.map((header) => ({ colHeaders: header }))}
@@ -147,11 +150,16 @@ export default function FixReportPage() {
               dropdownMenu={true}
               columnSorting={true}
               afterColumnSort={exclude}
+              height={`${
+                document.body.clientWidth > 1024
+                  ? "100%"
+                  : document.body.clientHeight - 200
+              }`}
 
               // for non-commercial use only
             />
           </div>
-          <div className="flex justify-between">
+          <div className="flex justify-start gap-4 items-center">
             <div className="flex gap-4">
               <button type="submit" className="btn_default">
                 save

@@ -69,7 +69,7 @@ export default function ViewReport() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen grow">
       {isError && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           에러가 발생했습니다.
@@ -81,7 +81,7 @@ export default function ViewReport() {
         </div>
       )}
       {tableData && (
-        <div className="flex flex-col gap-4 p-4 w-screen h-full">
+        <div className="flex flex-col gap-4 p-4 w-full h-full">
           <div className="flex justify-between w-full">
             <h1 className="flex gap-4 items-end">
               {title && title}
@@ -98,16 +98,16 @@ export default function ViewReport() {
           <div className="xl:w-full overflow-hidden reportTable relative flex-grow h-full">
             <HotTable
               id="hot"
-              data={data && data}
-              colHeaders={headers && headers}
+              data={data}
+              colHeaders={headers}
               rowHeaders={true}
               manualColumnMove={true}
               fixedColumnsStart={document.body.clientWidth > 1024 ? 1 : null}
               className="htCenter htMiddle"
               colWidths={
                 document.body.clientWidth > 1024
-                  ? document.body.clientWidth /
-                    JSON.parse(tableData.data)[0].length
+                  ?   `${window.innerWidth - 300}` /
+                  JSON.parse(tableData.data)[0].length
                   : (document.body.clientWidth / 3) * 2
               }
               rowHeights={`${window.innerHeight - 200}` / 10}
@@ -118,11 +118,6 @@ export default function ViewReport() {
                 document.body.clientWidth > 1024
                   ? "100%"
                   : document.body.clientHeight - 200
-              }`}
-              width={`${
-                document.body.clientWidth > 1024
-                  ? "100%"
-                  : document.body.clientWidth
               }`}
               // for non-commercial use only
             />
