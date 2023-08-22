@@ -48,7 +48,7 @@ export default function ViewReport() {
   //scrollViewportTo
   const scrollToBottom = () => {
     const hot = hotRef.current.hotInstance;
-    hot.scrollViewportTo(hot.countRows() - 1, hot.countCols() - 1);
+    hot.scrollViewportTo(hot.countRows() - 1, 0);
     // hot.scrollViewportTo(0,0);
   };
 
@@ -57,33 +57,6 @@ export default function ViewReport() {
     hot.scrollViewportTo(0, 0);
     // hot.scrollViewportTo(0,0);
   };
-
-  // const exportToXLSX = () => {
-  //   // Get the current sheet
-  //   // const data  headers + data
-  //   const data = hotRef.current.hotInstance.getData();
-
-  //   // Modify the data to include line breaks and handle null/undefined cells
-  //   const modifiedData = data.map(row => row.map(cell => cell && cell.replace(/\n/g, String.fromCharCode(10))));
-  //   // Create a new workbook
-  //   const workbook = XLSX.utils.book_new();
-
-  //   const sheet = XLSX.utils.aoa_to_sheet(modifiedData);
-
-  //   // Add the sheet to the workbook
-  //   XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1');
-
-  //   // Set auto width for columns
-  //   const ws = workbook.Sheets.Sheet1;
-  //   const colWidths = modifiedData[0].map((_, colIndex) => {
-  //     return { wch: Math.max(...modifiedData.map(row => (row[colIndex] || '').toString().length)) + 10 };
-  //   });
-
-  //   ws['!cols'] =  colWidths;
-
-  //   // Save the workbook to a file
-  // XLSX.writeFile(workbook, `${title}.xlsx`);
-  // };
 
   const handleDelete = async () => {
     if (window.confirm("삭제하시겠습니까?")) {
@@ -96,7 +69,7 @@ export default function ViewReport() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen grow">
       {isError && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           에러가 발생했습니다.
@@ -108,8 +81,8 @@ export default function ViewReport() {
         </div>
       )}
       {tableData && (
-        <div className="grow-[1] flex flex-col gap-4 p-4">
-          <div className="flex justify-between">
+        <div className="flex flex-col gap-4 p-4 w-full h-full">
+          <div className="flex justify-between w-full">
             <h1 className="flex gap-4 items-end">
               {title && title}
               <small>{timeStampFormat(tableData.createdAt)}</small>
@@ -122,28 +95,35 @@ export default function ViewReport() {
               삭제
             </button>
           </div>
-          <div className="h-[86vh] w-[87vw] overflow-hidden reportTable relative">
+          <div className="xl:w-full overflow-hidden reportTable relative flex-grow h-full">
             <HotTable
               id="hot"
-              data={data && data}
-              colHeaders={headers && headers}
+              data={data}
+              colHeaders={headers}
               rowHeaders={true}
               manualColumnMove={true}
-              fixedColumnsStart={1}
+              fixedColumnsStart={document.body.clientWidth > 1024 ? 1 : null}
               className="htCenter htMiddle"
               colWidths={
-                `${window.innerWidth - 300}` /
-                JSON.parse(tableData.data)[0].length
+                document.body.clientWidth > 1024
+                  ?   `${window.innerWidth - 300}` /
+                  JSON.parse(tableData.data)[0].length
+                  : (document.body.clientWidth / 3) * 2
               }
               rowHeights={`${window.innerHeight - 200}` / 10}
               licenseKey="non-commercial-and-evaluation"
               readOnly={true}
               ref={hotRef}
+              height={`${
+                document.body.clientWidth > 1024
+                  ? "100%"
+                  : document.body.clientHeight - 200
+              }`}
               // for non-commercial use only
             />
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-start xl:gap-10 xl:items-center xl:flex-row flex-col gap-2">
             <div className="flex gap-4">
               {data.length > 0 && (
                 <CSVLink
@@ -173,9 +153,7 @@ export default function ViewReport() {
             </div>
             <div className="flex gap-2">
               <div onClick={() => scrollToTop()}>위로</div>
-              <div onClick={() => scrollToBottom()} className="">
-                아래로
-              </div>
+              <div onClick={() => scrollToBottom()}>아래로</div>
             </div>
           </div>
         </div>
