@@ -63,23 +63,21 @@ export default function WritePage() {
   const hadleuseTemplete = () => {
     if (!useTemplete) {
       setData([
-        ["날짜",
-        "분류",
-        "요청자",
-        "내용",
-        "작업자",
-        "전달방식",
-        "관련 파일명"], [], [], [], []
+        ["날짜", "분류", "요청자", "내용", "작업자", "전달방식", "관련 파일명"],
+        [],
+        [],
+        [],
+        [],
       ]);
       setUseTemplete(true);
     } else {
-      setHeaders();
+      setData([["", "", "", "", "", "", ""], [], [], [], []]);
       setUseTemplete(false);
     }
   };
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
-  }
+  };
 
   return (
     <div className="grow-[1] p-4">
@@ -113,7 +111,7 @@ export default function WritePage() {
           </div>
         </div>
         <div className="h-[74vh] w-[87vw] overflow-hidden  reportTable relative">
-          <HotTableOption  colHeaders={true} data={data} hotRef={hotRef}/>
+          <HotTableOption colHeaders={true} data={data} hotRef={hotRef} />
         </div>
         <div className="flex gap-4">
           <button type="submit" className="btn_default">
@@ -129,12 +127,12 @@ export default function WritePage() {
             type="button"
           >{`엑셀 파일 업로드`}</label>
           <input
-          type="file"
-          accept=".xlsx, .csv"
-          onChange={(e) => handleFileUpload(e)}
-          className="mt-4 hidden"
-          id="fileUploadButton"
-        />
+            type="file"
+            accept=".xlsx, .csv"
+            onChange={(e) => handleFileUpload(e)}
+            className="mt-4 hidden"
+            id="fileUploadButton"
+          />
         </div>
       </form>
     </div>

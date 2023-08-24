@@ -5,7 +5,10 @@ import { CSVLink } from "react-csv";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { formatAgo } from "../utill/timeago";
-import {timeStampFormat, timeStampFormatNotHour} from "../utill/timeStampFormat";
+import {
+  timeStampFormat,
+  timeStampFormatNotHour,
+} from "../utill/timeStampFormat";
 import HotTableOption from "../service/HotTableOption";
 export default function ViewReport() {
   const [headers, setHeaders] = useState([]);
@@ -22,21 +25,30 @@ export default function ViewReport() {
     queryKey: ["report", param],
     queryFn: () =>
       getReportDataDetail(param).then((data) => {
-
         const newHeaders = JSON.parse(data.data)[0];
         const newHeaders2 = newHeaders.map((header) => {
-          if(header === null) {
+          if (header === null) {
             return "";
           } else {
             return header;
           }
-        })
-        setData(data.headers !== null || data.headers !== undefined ? JSON.parse(data.data).slice(1) : JSON.parse(data.data).slice(1) );
-        setHeaders(data.headers === undefined ? newHeaders2 : data.headers !== null ? data.headers : newHeaders2);
+        });
+        setData(
+          data.headers !== null || data.headers !== undefined
+            ? JSON.parse(data.data).slice(1)
+            : JSON.parse(data.data).slice(1)
+        );
+        setHeaders(
+          data.headers === undefined
+            ? newHeaders2
+            : data.headers !== null
+            ? data.headers
+            : newHeaders2
+        );
         setTitle(data.title);
-        // data.data 를 JSON.parse(data.data) 로 바꿔야함 
-        console.log(JSON.parse(data.data)[0])
-        console.log()
+        // data.data 를 JSON.parse(data.data) 로 바꿔야함
+        console.log(JSON.parse(data.data)[0]);
+        console.log();
         return data;
       }),
   });
@@ -53,17 +65,17 @@ export default function ViewReport() {
   };
 
   const handleDelete = async () => {
-    if(window.confirm("삭제하시겠습니까?") ) {
+    if (window.confirm("삭제하시겠습니까?")) {
       await deleteReport(param).then(() => {
         window.location.href = "/";
-      })
+      });
     } else {
       return false;
     }
-  }
+  };
 
   return (
-    <div>
+    <div className="w-full min-h-screen">
       {isError && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           에러가 발생했습니다.
@@ -75,8 +87,8 @@ export default function ViewReport() {
         </div>
       )}
       {tableData && (
-        <div className="grow-[1] flex flex-col gap-4 p-4">
-          <div className='flex justify-between'>
+        <div className="grow flex flex-col gap-4 p-4 w-full">
+          <div className="flex justify-between w-full">
             <h1 className="flex gap-4 items-end">
               {title && title}
               <small>{timeStampFormat(tableData.createdAt)}</small>
@@ -85,48 +97,56 @@ export default function ViewReport() {
               </small>
               {tableData.fix && <small>수정됨</small>}
             </h1>
-            <button type="button" onClick={() => handleDelete()} >삭제</button>
+            <button type="button" onClick={() => handleDelete()}>
+              삭제
+            </button>
           </div>
-          <div className="h-[86vh] w-[87vw] overflow-hidden reportTable relative">
-            <HotTableOption tableData={tableData} data={data} hotRef={hotRef} colHeaders={headers} readOnly={true}/>
+          <div className="h-[130vw] xl:h-[86vh] w-full overflow-hidden reportTable relative">
+            <HotTableOption
+              tableData={tableData}
+              data={data}
+              hotRef={hotRef}
+              colHeaders={headers}
+              readOnly={true}
+            />
           </div>
-         <div className='flex justify-between'>
-         <div className="flex gap-4">
-            {data.length > 0 && (
-              <CSVLink
-                data={data}
-                headers={headers}
-                filename={`${title}_${timeStampFormatNotHour(tableData.createdAt)}.csv`}
-                className="btn_default"
-                onClick={() => {
-                  if(window.confirm("CSV 파일을 다운로드 하시겠습니까?") ) {
-                    setTimeout(() => {
-                      this.csvLink.current.link.click();
-                   });
-                  } else {
-                    return false;
-                  }
-                }}
-              >
-                Export CSV
-              </CSVLink>
-            )}
-            {/* <button className="btn_default" onClick={exportToXLSX}>
+          <div className="flex justify-between">
+            <div className="flex gap-4">
+              {data.length > 0 && (
+                <CSVLink
+                  data={data}
+                  headers={headers}
+                  filename={`${title}_${timeStampFormatNotHour(
+                    tableData.createdAt
+                  )}.csv`}
+                  className="btn_default"
+                  onClick={() => {
+                    if (window.confirm("CSV 파일을 다운로드 하시겠습니까?")) {
+                      setTimeout(() => {
+                        this.csvLink.current.link.click();
+                      });
+                    } else {
+                      return false;
+                    }
+                  }}
+                >
+                  Export CSV
+                </CSVLink>
+              )}
+              {/* <button className="btn_default" onClick={exportToXLSX}>
               Export XLSX
             </button> */}
-            <Link to={`/reports/${param}/fix`} className="btn_default"  >
-              fix
-            </Link>
-          </div>
-          <div className='flex gap-2'>
-            <div onClick={() => scrollToTop()}>
-              위로
+              <Link to={`/reports/${param}/fix`} className="btn_default">
+                fix
+              </Link>
             </div>
-            <div onClick={() => scrollToBottom()} className="">
+            <div className="flex gap-2">
+              <div onClick={() => scrollToTop()}>위로</div>
+              <div onClick={() => scrollToBottom()} className="">
                 아래로
+              </div>
             </div>
           </div>
-         </div>
         </div>
       )}
     </div>

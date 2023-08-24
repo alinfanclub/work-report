@@ -10,6 +10,7 @@ export default function CreateUser() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userName, setUserName] = useState("");
+  const [errorMessages, setErrorMessages] = useState("");
 
   const navigate = useNavigate();
   const auth = getAuth();
@@ -36,6 +37,31 @@ export default function CreateUser() {
       navigate("/login");
     } catch (error) {
       console.log(error);
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          setErrorMessages("이미 사용중인 이메일입니다.");
+          setTimeout(() => {
+            setErrorMessages(null);
+          }, 3000);
+          break;
+        case "auth/invalid-email":
+          setErrorMessages("유효하지 않은 이메일입니다.");
+          setTimeout(() => {
+            setErrorMessages(null);
+          }, 3000);
+          break;
+        case "auth/weak-password":
+          setErrorMessages("비밀번호는 6자리 이상이어야 합니다.");
+          setTimeout(() => {
+            setErrorMessages(null);
+          }, 3000);
+          break;
+        default:
+          setErrorMessages("회원가입에 실패했습니다.");
+          setTimeout(() => {
+            setErrorMessages(null);
+          }, 3000);
+      }
     }
   };
   return (
@@ -70,6 +96,7 @@ export default function CreateUser() {
           >
             회원가입
           </button>
+          {errorMessages && <span>{errorMessages}</span>}
         </div>
       </form>
     </div>

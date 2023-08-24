@@ -4,7 +4,7 @@ import { getReportDataDetail, updateReport } from "../api/firestore";
 import { onUserStateChanged } from "../api/firebase";
 import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import {timeStampFormat} from "../utill/timeStampFormat";
+import { timeStampFormat } from "../utill/timeStampFormat";
 import HotTableOption from "../service/HotTableOption";
 
 export default function FixReportPage() {
@@ -27,13 +27,21 @@ export default function FixReportPage() {
     queryKey: ["report", param],
     queryFn: () =>
       getReportDataDetail(param).then((data) => {
-        setData(data.headers ? Array(data.headers).concat(JSON.parse(data.data)).slice(1) : JSON.parse(data.data))
-        setHeaders(data.headers ? data.headers : Array(data.headers).concat(JSON.parse(data.data))[0])
+        setData(
+          data.headers
+            ? Array(data.headers).concat(JSON.parse(data.data)).slice(1)
+            : JSON.parse(data.data)
+        );
+        setHeaders(
+          data.headers
+            ? data.headers
+            : Array(data.headers).concat(JSON.parse(data.data))[0]
+        );
         setTitle(data.title);
-        console.log(Array(data.headers).concat(JSON.parse(data.data)))
+        console.log(Array(data.headers).concat(JSON.parse(data.data)));
         return data;
       }),
-      refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
@@ -46,7 +54,7 @@ export default function FixReportPage() {
     hot = hotRef.current.hotInstance;
     console.log({ data: JSON.stringify(hot.getData()) });
     let data = JSON.stringify(hot.getData());
-    setHeaders(data[0])
+    setHeaders(data[0]);
     await updateReport(headers, data, title, param).then(() => {
       setTitle("");
       navigate(`/reports/${param}`);
@@ -66,9 +74,8 @@ export default function FixReportPage() {
     // hot.scrollViewportTo(0,0);
   };
 
-
   return (
-    <div>
+    <div className="w-full min-h-screen">
       {isError && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           에러가 발생했습니다.
@@ -95,26 +102,29 @@ export default function FixReportPage() {
             />
             <small>{timeStampFormat(tableData.createdAt)}</small>
           </div>
-          <div className="h-[86vh] w-[87vw] overflow-hidden reportTable relative">
-            <HotTableOption tableData={tableData} data={data} hotRef={hotRef} colHeaders={true} />
+          <div className="h-[130vw] xl:h-[86vh] w-full overflow-hidden reportTable relative">
+            <HotTableOption
+              tableData={tableData}
+              data={data}
+              hotRef={hotRef}
+              colHeaders={true}
+            />
           </div>
-          <div className='flex justify-between'>
-          <div className="flex gap-4">
-            <button type="submit" className="btn_default">
-              save
-            </button>
-            {/* <button onClick={addRow} type="button" className="btn_default">
+          <div className="flex justify-between">
+            <div className="flex gap-4">
+              <button type="submit" className="btn_default">
+                save
+              </button>
+              {/* <button onClick={addRow} type="button" className="btn_default">
               addRow
             </button> */}
-          </div>
-          <div className='flex gap-2'>
-            <div onClick={() => scrollToTop()}>
-              위로
             </div>
-            <div onClick={() => scrollToBottom()} className="">
+            <div className="flex gap-2">
+              <div onClick={() => scrollToTop()}>위로</div>
+              <div onClick={() => scrollToBottom()} className="">
                 아래로
+              </div>
             </div>
-          </div>
           </div>
         </form>
       )}

@@ -21,7 +21,7 @@ export default function MainPage() {
       });
   }, [user]);
   return (
-    <div className="w-full relative h-screen p-10">
+    <div className="w-full relative min-h-screen xl:h-screen p-4 xl:p-10">
       <div className="flex gap-8 mx-auto w-fit flex-col items-center">
         <h1>{user && user.displayName}</h1>
         <table className="">
@@ -46,9 +46,11 @@ export default function MainPage() {
                   <td>
                     <div className="flex gap-2">
                       <small>{timeStampFormat(report.createdAt)}</small>
-                      <small>
-                        {formatAgo(timeStampFormat(report.createdAt), "ko")}
-                      </small>
+                      {window.innerWidth > 1024 && (
+                        <small>
+                          {formatAgo(timeStampFormat(report.createdAt), "ko")}
+                        </small>
+                      )}
                     </div>
                   </td>
                 </tr>
