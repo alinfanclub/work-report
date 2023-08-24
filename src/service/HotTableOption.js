@@ -15,13 +15,12 @@ export default function HotTableOption({tableData, data, hotRef, colHeaders, rea
       lastRowIndex
     );
   };
-  console.log(data)
-  console.log(tableData)
+  console.log(colHeaders)
 
   return (
     <HotTable
     id="hot"
-    data={data ? data : null}
+    data={data && data}
     colHeaders={colHeaders}
     rowHeaders={true}
     manualColumnMove={true}

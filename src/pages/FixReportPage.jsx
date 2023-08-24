@@ -33,6 +33,7 @@ export default function FixReportPage() {
         console.log(Array(data.headers).concat(JSON.parse(data.data)))
         return data;
       }),
+      refetchOnWindowFocus: false,
   });
 
   useEffect(() => {

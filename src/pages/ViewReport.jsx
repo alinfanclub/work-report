@@ -31,8 +31,8 @@ export default function ViewReport() {
             return header;
           }
         })
-        setData(data.headers !== null || undefined ? JSON.parse(data.data).slice(1) : JSON.parse(data.data).slice(1) );
-        setHeaders(data.headers !== null ? data.headers : newHeaders2);
+        setData(data.headers !== null || data.headers !== undefined ? JSON.parse(data.data).slice(1) : JSON.parse(data.data).slice(1) );
+        setHeaders(data.headers === undefined ? newHeaders2 : data.headers !== null ? data.headers : newHeaders2);
         setTitle(data.title);
         // data.data 를 JSON.parse(data.data) 로 바꿔야함 
         console.log(JSON.parse(data.data)[0])
