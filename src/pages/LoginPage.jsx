@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { loginGoogle, onUserStateChanged } from "../api/firebase";
-import { getUserDate } from "../api/firestore";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
