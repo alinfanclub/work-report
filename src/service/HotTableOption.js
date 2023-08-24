@@ -1,45 +1,44 @@
-export HotTableOption = {
-  width={1000}
-            rowHeaders={true}
-            manualColumnMove={true}
-            fixedColumnsStart={1}
-            cells={[{ className: "htCenter htMiddle" }]}
-            licenseKey="non-commercial-and-evaluation"
-            colWidths={`${window.innerWidth - 300}` / headers.length}
-            rowHeights={`${window.innerHeight - 200}` / data.length}
-            columns={[
-              {
-                type: "date",
-                dateFormat: "YY/MM/DD",
-                correctFormat: true,
-                defaultDate: new Intl.DateTimeFormat("ko", {
-                  dateStyle: "full",
-                  timeStyle: "short",
-                }).format(new Date()),
-                // datePicker additional options
-                // (see https://github.com/dbushell/Pikaday#configuration)
-                datePickerConfig: {
-                  // First day of the week (0: Sunday, 1: Monday, etc)
-                  firstDay: 0,
-                  showWeekNumber: true,
-                  licenseKey: "non-commercial-and-evaluation",
-                  disableDayFn(date) {
-                    // Disable Sunday and Saturday
-                    return date.getDay() === 0 || date.getDay() === 6;
-                  },
-                },
-              },
-              {
-                editor: "select",
-                selectOptions: ["요청", "GUI", "퍼블", "휴무", "기타"],
-              },
-              {},
-              {},
-              {},
-              {},
-              {},
-            ]}
-            manualColumnResize={true}
-            dropdownMenu={true}
-            columnSorting={true}
+import { HotTable } from '@handsontable/react';
+import React from 'react';
+
+export default function HotTableOption({tableData, data, hotRef, colHeaders, readOnly}) {
+
+  const exclude = () => {
+    const handsontableInstance = hotRef.current.hotInstance;
+    const lastRowIndex = handsontableInstance.countRows() - 1;
+  
+    // after each sorting, take row 1 and change its index to 0
+    handsontableInstance.rowIndexMapper.moveIndexes(handsontableInstance.toVisualRow(0), 0);
+    // after each sorting, take row 16 and change its index to 15
+    handsontableInstance.rowIndexMapper.moveIndexes(
+      handsontableInstance.toVisualRow(lastRowIndex),
+      lastRowIndex
+    );
+  };
+  console.log(data)
+  console.log(tableData)
+
+  return (
+    <HotTable
+    id="hot"
+    data={data ? data : null}
+    colHeaders={colHeaders}
+    rowHeaders={true}
+    manualColumnMove={true}
+    fixedColumnsStart={1}
+    className="htCenter htMiddle"
+    colWidths={tableData ? `${window.innerWidth - 300}` / JSON.parse(tableData.data)[0].length : `${window.innerWidth - 300}` / 7}
+    rowHeights={`${window.innerHeight - 200}` / 10}
+    licenseKey="non-commercial-and-evaluation"
+    readOnly={readOnly ? readOnly : false}
+    ref={hotRef}
+    contextMenu={true}
+    manualColumnResize={true}
+    dropdownMenu={true}
+    columnSorting={true}
+    afterColumnSort={exclude}
+    // for non-commercial use only
+  />
+  );
 }
+

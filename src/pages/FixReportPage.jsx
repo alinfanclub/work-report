@@ -1,4 +1,3 @@
-import { HotTable } from "@handsontable/react";
 import React, { useEffect, useRef, useState } from "react";
 import { registerAllModules } from "handsontable/registry";
 import { getReportDataDetail, updateReport } from "../api/firestore";
@@ -6,6 +5,7 @@ import { onUserStateChanged } from "../api/firebase";
 import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import {timeStampFormat} from "../utill/timeStampFormat";
+import HotTableOption from "../service/HotTableOption";
 
 export default function FixReportPage() {
   registerAllModules();
@@ -15,7 +15,7 @@ export default function FixReportPage() {
   let hot;
   // eslint-disable-next-line
   const [user, setUser] = useState(null);
-  const [headers, setHeaders] = useState();
+  const [headers, setHeaders] = useState([]);
   const [data, setData] = useState([]);
   const [title, setTitle] = useState("");
 
@@ -27,22 +27,10 @@ export default function FixReportPage() {
     queryKey: ["report", param],
     queryFn: () =>
       getReportDataDetail(param).then((data) => {
-        // const newHeaders = JSON.parse(data.data)[0];
-
-        // // 그리고null 은 ""으로 바꿔야함
-        // const newHeaders2 = newHeaders.map((header) => {
-        //   if(header === null) {
-        //     return "";
-        //   } else {
-        //     return header;
-        //   }
-        // })
-        setData(data.headers ? Array(data.headers).concat(JSON.parse(data.data)).slice(1)  : Array(data.headers).concat(JSON.parse(data.data)));
+        setData(data.headers ? Array(data.headers).concat(JSON.parse(data.data)).slice(1) : JSON.parse(data.data))
         setHeaders(data.headers ? data.headers : Array(data.headers).concat(JSON.parse(data.data))[0])
-        console.log(data.headers)
-        console.log(Array(data.headers).concat(JSON.parse(data.data)));
-        
         setTitle(data.title);
+        console.log(Array(data.headers).concat(JSON.parse(data.data)))
         return data;
       }),
   });
@@ -52,13 +40,6 @@ export default function FixReportPage() {
       setUser(user);
     });
   }, []);
-
-  // const addRow = () => {
-  //   const newRow = new Array(headers.length).fill("");
-  //   hot = hotRef.current.hotInstance;
-  //   hot.alter("insert_row_below", hot.countRows(), 1, newRow);
-  // };
-
   const saveClickCallback = async (e) => {
     e.preventDefault();
     hot = hotRef.current.hotInstance;
@@ -83,18 +64,7 @@ export default function FixReportPage() {
     hot.scrollViewportTo(0, 0);
     // hot.scrollViewportTo(0,0);
   };
-  const exclude = () => {
-    const handsontableInstance = hotRef.current.hotInstance;
-    const lastRowIndex = handsontableInstance.countRows() - 1;
 
-    // after each sorting, take row 1 and change its index to 0
-    handsontableInstance.rowIndexMapper.moveIndexes(handsontableInstance.toVisualRow(0), 0);
-    // after each sorting, take row 16 and change its index to 15
-    handsontableInstance.rowIndexMapper.moveIndexes(
-      handsontableInstance.toVisualRow(lastRowIndex),
-      lastRowIndex
-    );
-  };
 
   return (
     <div>
@@ -124,28 +94,8 @@ export default function FixReportPage() {
             />
             <small>{timeStampFormat(tableData.createdAt)}</small>
           </div>
-          <div className="h-[86vh] w-[87vw] overflow-hidden">
-            <HotTable
-              id="hot"
-              data={data && data}
-              colHeaders={true}
-              ref={hotRef}
-              contextMenu={true}
-              rowHeaders={true}
-              manualColumnMove={true}
-              fixedColumnsStart={1}
-              className="htCenter htMiddle"
-              licenseKey="non-commercial-and-evaluation"
-              colWidths={`${window.innerWidth - 300}` / JSON.parse(tableData.data)[0].length}
-              rowHeights={`${window.innerHeight - 200}` / 10}
-              // columns={headers && headers.map((header) => ({ colHeaders: header }))}
-              manualColumnResize={true}
-              dropdownMenu={true}
-              columnSorting={true}
-              afterColumnSort={exclude}
-              
-              // for non-commercial use only
-            />
+          <div className="h-[86vh] w-[87vw] overflow-hidden reportTable relative">
+            <HotTableOption tableData={tableData} data={data} hotRef={hotRef} colHeaders={true} />
           </div>
           <div className='flex justify-between'>
           <div className="flex gap-4">

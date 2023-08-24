@@ -1,4 +1,3 @@
-import { HotTable } from "@handsontable/react";
 import React, { useEffect, useRef, useState } from "react";
 import { registerAllModules } from "handsontable/registry";
 import { addReport } from "../api/firestore";
@@ -6,6 +5,7 @@ import { onUserStateChanged } from "../api/firebase";
 import { useNavigate } from "react-router";
 import { AiFillCheckSquare, AiOutlineCheckSquare } from "react-icons/ai";
 import * as XLSX from "xlsx";
+import HotTableOption from "../service/HotTableOption";
 
 export default function WritePage() {
   registerAllModules();
@@ -83,38 +83,6 @@ export default function WritePage() {
     }
   };
 
-  // const handleOnDrop = (e, setState, csvObject) => {
-  //   e.preventDefault();
-
-  //   let file = e.dataTransfer.files[0];
-  //   let fileReader = new FileReader();
-
-  //   fileReader.readAsText(file, "utf-8"); // or euc-kr
-
-  //   fileReader.onload = function () {
-  //     //console.log(fileReader.result);
-  //     parsingCsv(fileReader.result, csvObject);
-  //     return;
-  //   };
-
-  //   setState(false);
-  //   return false;
-  // };
-
-  // const handleUpload = (e, csvObject) => {
-  //   let file = e.target.files[0];
-  //   let fileReader = new FileReader();
-
-  //   if (file === undefined) return; /* 방어 코드 추가 */
-
-  //   fileReader.readAsText(file, "utf-8"); // or euc-kr
-
-  //   fileReader.onload = function () {
-  //     //console.log(fileReader.result);
-  //     parsingCsv(fileReader.result, csvObject);
-  //   };
-  // };
-
   const mySplit = (line, delimiter, ignore) => {
     let spt = [];
     let tmp = "";
@@ -166,19 +134,20 @@ export default function WritePage() {
 
   const hadleuseTemplete = () => {
     if (!useTemplete) {
-      setHeaders([
-        "날짜",
+      setData([
+        ["날짜",
         "분류",
         "요청자",
         "내용",
         "작업자",
         "전달방식",
-        "관련 파일명",
+        "관련 파일명"], [], [], [], []
       ]);
       setUseTemplete(true);
     } else {
       setHeaders();
       setUseTemplete(false);
+      setData()
     }
   };
 
@@ -213,28 +182,8 @@ export default function WritePage() {
             </label>
           </div>
         </div>
-        <div className="h-[74vh] w-[87vw] overflow-hidden">
-          <HotTable
-            id="hot"
-            data={data && data}
-            contextMenu={true}
-            // colHeaders={headers}
-            colHeaders={headers ? headers : true}
-            rowHeaders={true}
-            manualColumnMove={true}
-            fixedColumnsStart={1}
-            licenseKey="non-commercial-and-evaluation"
-            ref={hotRef}
-            colWidths={`${window.innerWidth - 300}` / 7}
-            rowHeights={`${window.innerHeight - 300}` / 10}
-            //headers length 만큼  columns={[]}안에 {} 생성
-            columns={headers && headers.map((header) => ({ colHeaders: header }))}
-            manualColumnResize={true}
-            dropdownMenu={true}
-            columnSorting={true}
-            className="htCenter htMiddle"
-            // for non-commercial use only
-          />
+        <div className="h-[74vh] w-[87vw] overflow-hidden  reportTable relative">
+          <HotTableOption  colHeaders={headers ? headers : true} data={data} />
         </div>
         <div className="flex gap-4">
           <button type="submit" className="btn_default">

@@ -1,12 +1,12 @@
 import React, { useRef, useState } from "react";
 import { useParams } from "react-router";
 import { deleteReport, getReportDataDetail } from "../api/firestore";
-import { HotTable } from "@handsontable/react";
 import { CSVLink } from "react-csv";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { formatAgo } from "../utill/timeago";
 import {timeStampFormat, timeStampFormatNotHour} from "../utill/timeStampFormat";
+import HotTableOption from "../service/HotTableOption";
 export default function ViewReport() {
   const [headers, setHeaders] = useState([]);
   const [data, setData] = useState([]);
@@ -24,8 +24,6 @@ export default function ViewReport() {
       getReportDataDetail(param).then((data) => {
 
         const newHeaders = JSON.parse(data.data)[0];
-
-        // 그리고null 은 ""으로 바꿔야함
         const newHeaders2 = newHeaders.map((header) => {
           if(header === null) {
             return "";
@@ -33,7 +31,7 @@ export default function ViewReport() {
             return header;
           }
         })
-        setData(data.headers !== null ? JSON.parse(data.data).slice(1) : JSON.parse(data.data).slice(1) );
+        setData(data.headers !== null || undefined ? JSON.parse(data.data).slice(1) : JSON.parse(data.data).slice(1) );
         setHeaders(data.headers !== null ? data.headers : newHeaders2);
         setTitle(data.title);
         // data.data 를 JSON.parse(data.data) 로 바꿔야함 
@@ -47,45 +45,12 @@ export default function ViewReport() {
   const scrollToBottom = () => {
     const hot = hotRef.current.hotInstance;
     hot.scrollViewportTo(hot.countRows() - 1, hot.countCols() - 1);
-    // hot.scrollViewportTo(0,0);
   };
 
   const scrollToTop = () => {
     const hot = hotRef.current.hotInstance;
     hot.scrollViewportTo(0, 0);
-    // hot.scrollViewportTo(0,0);
   };
- 
-
-
-  // const exportToXLSX = () => {
-  //   // Get the current sheet
-  //   // const data  headers + data
-  //   const data = hotRef.current.hotInstance.getData();
-
-  //   // Modify the data to include line breaks and handle null/undefined cells
-  //   const modifiedData = data.map(row => row.map(cell => cell && cell.replace(/\n/g, String.fromCharCode(10))));
-  //   // Create a new workbook
-  //   const workbook = XLSX.utils.book_new();
-    
-  //   const sheet = XLSX.utils.aoa_to_sheet(modifiedData);
-
-  //   // Add the sheet to the workbook
-  //   XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1');
-
-
-  //   // Set auto width for columns
-  //   const ws = workbook.Sheets.Sheet1;
-  //   const colWidths = modifiedData[0].map((_, colIndex) => {
-  //     return { wch: Math.max(...modifiedData.map(row => (row[colIndex] || '').toString().length)) + 10 };
-  //   });
-
-  //   ws['!cols'] =  colWidths;
-    
-        
-  //   // Save the workbook to a file
-  // XLSX.writeFile(workbook, `${title}.xlsx`);
-  // };
 
   const handleDelete = async () => {
     if(window.confirm("삭제하시겠습니까?") ) {
@@ -123,23 +88,8 @@ export default function ViewReport() {
             <button type="button" onClick={() => handleDelete()} >삭제</button>
           </div>
           <div className="h-[86vh] w-[87vw] overflow-hidden reportTable relative">
-            <HotTable
-              id="hot"
-              data={data && data}
-              colHeaders={headers && headers}
-              rowHeaders={true}
-              manualColumnMove={true}
-              fixedColumnsStart={1}
-              className="htCenter htMiddle"
-              colWidths={`${window.innerWidth - 300}` / JSON.parse(tableData.data)[0].length}
-              rowHeights={`${window.innerHeight - 200}` / 10}
-              licenseKey="non-commercial-and-evaluation"
-              readOnly={true}
-              ref={hotRef}
-              // for non-commercial use only
-            />
+            <HotTableOption tableData={tableData} data={data} hotRef={hotRef} colHeaders={headers} readOnly={true}/>
           </div>
-
          <div className='flex justify-between'>
          <div className="flex gap-4">
             {data.length > 0 && (
