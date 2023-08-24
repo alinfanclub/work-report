@@ -71,7 +71,8 @@ export async function addReport(data, user, title) {
   });
 }
 
-export async function updateReport(data, title, reportId) {
+export async function updateReport(headers, data, title, reportId) {
+  console.log(reportId)
   const washingtonRef = doc(db, "reports", reportId);
 
   await updateDoc(washingtonRef, {
