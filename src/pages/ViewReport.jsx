@@ -100,7 +100,9 @@ export default function ViewReport() {
                 className="btn_default"
                 onClick={() => {
                   if(window.confirm("CSV 파일을 다운로드 하시겠습니까?") ) {
-                    return true;
+                    setTimeout(() => {
+                      this.csvLink.current.link.click();
+                   });
                   } else {
                     return false;
                   }
