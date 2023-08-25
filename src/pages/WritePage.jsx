@@ -36,11 +36,11 @@ export default function WritePage() {
   const saveClickCallback = async (e) => {
     e.preventDefault();
     hot = hotRef.current.hotInstance;
-    console.log({ data: JSON.stringify(hot.getData()) });
+    console.log(hot.getData());
     let data = JSON.stringify(hot.getData());
-    await addReport(headers, data, user, title).then(() => {
+    await addReport(headers, data, user, title).then((reportId) => {
       setTitle("");
-      navigate("/");
+      navigate(`/reports/${reportId}`);
     });
   };
 

@@ -70,10 +70,12 @@ export async function addReport(headers, data, user, title) {
     fix: false,
     writer: user.displayName,
   });
+
+  return reportId;
 }
 
 export async function updateReport(headers, data, title, reportId) {
-  console.log(reportId)
+  console.log(reportId);
   const washingtonRef = doc(db, "reports", reportId);
 
   await updateDoc(washingtonRef, {
