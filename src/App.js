@@ -18,7 +18,10 @@ function App() {
   }, [navigate]);
   return (
     <div className="App w-full">
-      <div id="container" className="flex relative justify-start w-screen">
+      <div
+        id="container"
+        className="xl:flex relative xl:justify-start w-screen xl:flex-row"
+      >
         <NavBar />
         <Outlet />
       </div>

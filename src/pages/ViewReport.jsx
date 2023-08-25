@@ -10,6 +10,7 @@ import {
   timeStampFormatNotHour,
 } from "../utill/timeStampFormat";
 import HotTableOption from "../service/HotTableOption";
+import { MdDeleteOutline } from "react-icons/md";
 export default function ViewReport() {
   const [headers, setHeaders] = useState([]);
   const [data, setData] = useState([]);
@@ -88,20 +89,26 @@ export default function ViewReport() {
       )}
       {tableData && (
         <div className="grow flex flex-col gap-4 p-4 w-full">
-          <div className="flex justify-between w-full">
-            <h1 className="flex gap-4 items-end">
+          <div className="flex justify-between w-full items-start xl:items-center">
+            <h1 className="flex gap-4 xl:items-end flex-col xl:flex-row ">
               {title && title}
-              <small>{timeStampFormat(tableData.createdAt)}</small>
-              <small>
-                {formatAgo(timeStampFormat(tableData.createdAt), "ko")}
-              </small>
-              {tableData.fix && <small>수정됨</small>}
+              <div className="flex gap-2">
+                <small>{timeStampFormat(tableData.createdAt)}</small>
+                <small>
+                  {formatAgo(timeStampFormat(tableData.createdAt), "ko")}
+                </small>
+                {tableData.fix && <small>수정됨</small>}
+              </div>
             </h1>
-            <button type="button" onClick={() => handleDelete()}>
-              삭제
+            <button
+              type="button"
+              onClick={() => handleDelete()}
+              className="text-2xl "
+            >
+              <MdDeleteOutline />
             </button>
           </div>
-          <div className="h-[130vw] xl:h-[86vh] w-full overflow-hidden reportTable relative">
+          <div className="h-[170vw] xl:h-[86vh] w-full overflow-hidden reportTable relative">
             <HotTableOption
               tableData={tableData}
               data={data}

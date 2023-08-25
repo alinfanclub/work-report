@@ -27,11 +27,11 @@ export default function WritePage() {
     });
   }, []);
 
-  const addRow = () => {
-    const newRow = new Array(headers.length).fill("");
-    hot = hotRef.current.hotInstance;
-    hot.alter("insert_row_below", hot.countRows(), 1, newRow);
-  };
+  // const addRow = () => {
+  //   const newRow = new Array(headers.length).fill("");
+  //   hot = hotRef.current.hotInstance;
+  //   hot.alter("insert_row_below", hot.countRows(), 1, newRow);
+  // };
 
   const saveClickCallback = async (e) => {
     e.preventDefault();
@@ -48,6 +48,7 @@ export default function WritePage() {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
+      reader.readAsArrayBuffer(file);
       reader.onload = (e) => {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: "array" });
@@ -56,7 +57,6 @@ export default function WritePage() {
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
         setData(jsonData);
       };
-      reader.readAsArrayBuffer(file);
     }
   };
 
@@ -80,59 +80,54 @@ export default function WritePage() {
   };
 
   return (
-    <div className="grow-[1] p-4">
-      <form
-        onSubmit={(...arg) => saveClickCallback(...arg)}
-        className="flex flex-col gap-4 items-start "
-      >
-        <div className="flex w-full gap-2 items-end">
-          <input
-            type="text"
-            placeholder="제목"
-            onChange={handleTitleChange}
-            required
-            className=" max-w-[300px] "
-          />
-          <div>
+    <div className="w-full">
+      <form onSubmit={(...arg) => saveClickCallback(...arg)}>
+        <div className="flex flex-col gap-2 grow p-4 xl:w-full w-screen">
+          <div className="flex gap-2 w-full flex-col xl:flex-row items-start xl:items-end">
             <input
-              type="checkbox"
-              id="useTemplete"
-              className="hidden"
-              onChange={() => hadleuseTemplete()}
+              type="text"
+              placeholder="제목"
+              onChange={handleTitleChange}
+              required
+              className=" max-w-[300px] "
             />
-            <label htmlFor="useTemplete" className="flex items-center gap-2">
-              <p>템플릿 사용</p>
-              {useTemplete ? (
-                <AiFillCheckSquare className="text-blue-700" />
-              ) : (
-                <AiOutlineCheckSquare />
-              )}
-            </label>
+            <div>
+              <input
+                type="checkbox"
+                id="useTemplete"
+                className="hidden"
+                onChange={() => hadleuseTemplete()}
+              />
+              <label htmlFor="useTemplete" className="flex items-center gap-2">
+                <p>템플릿 사용</p>
+                {useTemplete ? (
+                  <AiFillCheckSquare className="text-blue-700" />
+                ) : (
+                  <AiOutlineCheckSquare />
+                )}
+              </label>
+            </div>
           </div>
-        </div>
-        <div className="h-[74vh] w-[87vw] overflow-hidden  reportTable relative">
-          <HotTableOption colHeaders={true} data={data} hotRef={hotRef} />
-        </div>
-        <div className="flex gap-4">
-          <button type="submit" className="btn_default">
-            save
-          </button>
-
-          <button onClick={addRow} type="button" className="btn_default">
-            addRow
-          </button>
-          <label
-            className="btn_default"
-            htmlFor="fileUploadButton"
-            type="button"
-          >{`엑셀 파일 업로드`}</label>
-          <input
-            type="file"
-            accept=".xlsx, .csv"
-            onChange={(e) => handleFileUpload(e)}
-            className="mt-4 hidden"
-            id="fileUploadButton"
-          />
+          <div className="min-h-[120vw] xl:min-h-[30vw] w-full  overflow-hidden reportTable relative">
+            <HotTableOption colHeaders={true} data={data} hotRef={hotRef} />
+          </div>
+          <div className="flex gap-4">
+            <button type="submit" className="btn_default">
+              save
+            </button>
+            <label
+              className="btn_default"
+              htmlFor="fileUploadButton"
+              type="button"
+            >{`엑셀 파일 업로드`}</label>
+            <input
+              type="file"
+              accept=".xlsx, .csv"
+              onChange={(e) => handleFileUpload(e)}
+              className="mt-4 hidden"
+              id="fileUploadButton"
+            />
+          </div>
         </div>
       </form>
     </div>

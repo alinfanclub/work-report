@@ -23,8 +23,6 @@ export default function HotTableOption({
       lastRowIndex
     );
   };
-  console.log(colHeaders);
-  console.log(data);
 
   // colWidth를 반환하는 함수
   const colWidths = () => {
@@ -43,7 +41,10 @@ export default function HotTableOption({
       }
       return colWidths;
     } else {
-      return (window.innerWidth - 300) / 7;
+      return (colWidths =
+        window.innerWidth > 1024
+          ? (window.innerWidth - 300) / 5
+          : window.innerWidth / 5);
     }
   };
 
@@ -54,8 +55,8 @@ export default function HotTableOption({
       colHeaders={colHeaders}
       rowHeaders={true}
       manualColumnMove={true}
-      fixedColumnsStart={1}
-      className="htCenter htMiddle"
+      fixedColumnsStart={window.innerWidth > 1024 ? 1 : 0}
+      className="htCenter htMiddle z-0"
       colWidths={colWidths()}
       rowHeights={`${(window.innerHeight - 200) / 10}`}
       licenseKey="non-commercial-and-evaluation"

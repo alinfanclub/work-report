@@ -89,9 +89,9 @@ export default function FixReportPage() {
       {tableData && (
         <form
           onSubmit={(...arg) => saveClickCallback(...arg)}
-          className="flex flex-col gap-4 grow-[1] p-4"
         >
-          <div className="flex gap-2 items-end">
+          <div className="flex flex-col gap-2 grow p-4 xl:w-full w-screen">
+          <div className="flex gap-2 w-full flex-col xl:flex-row items-start xl:items-end">
             <input
               type="text"
               placeholder="제목"
@@ -102,7 +102,7 @@ export default function FixReportPage() {
             />
             <small>{timeStampFormat(tableData.createdAt)}</small>
           </div>
-          <div className="h-[130vw] xl:h-[86vh] w-full overflow-hidden reportTable relative">
+          <div className="h-[170vw] xl:h-[86vh] w-full overflow-hidden reportTable relative">
             <HotTableOption
               tableData={tableData}
               data={data}
@@ -110,7 +110,7 @@ export default function FixReportPage() {
               colHeaders={true}
             />
           </div>
-          <div className="flex justify-between">
+          <div className="flex jusitify-start items-center w-full gap-4">
             <div className="flex gap-4">
               <button type="submit" className="btn_default">
                 save
@@ -125,6 +125,7 @@ export default function FixReportPage() {
                 아래로
               </div>
             </div>
+          </div>
           </div>
         </form>
       )}
