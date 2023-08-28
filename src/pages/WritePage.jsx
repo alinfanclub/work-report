@@ -71,7 +71,6 @@ export default function WritePage() {
           "전달방식",
           "관련 파일명",
         ];
-        console.log(Array(templete).concat(data));
         setData(Array(templete).concat(data));
         setUseTemplete(true);
       }
@@ -88,7 +87,7 @@ export default function WritePage() {
 
   return (
     <div className="w-full">
-      <form onSubmit={(...arg) => saveClickCallback(...arg)}>
+      <form onSubmit={saveClickCallback}>
         <div className="flex flex-col gap-2 grow p-4 xl:w-full w-screen">
           <div className="flex gap-2 w-full flex-col xl:flex-row items-start xl:items-end">
             <input
