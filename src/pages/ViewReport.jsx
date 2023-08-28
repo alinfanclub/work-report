@@ -11,6 +11,7 @@ import {
 } from "../utill/timeStampFormat";
 import HotTableOption from "../service/HotTableOption";
 import { MdDeleteOutline } from "react-icons/md";
+import { BsPencilSquare } from "react-icons/bs";
 export default function ViewReport() {
   const [headers, setHeaders] = useState([]);
   const [data, setData] = useState([]);
@@ -100,13 +101,18 @@ export default function ViewReport() {
                 {tableData.fix && <small>수정됨</small>}
               </div>
             </h1>
-            <button
-              type="button"
-              onClick={() => handleDelete()}
-              className="text-2xl "
-            >
-              <MdDeleteOutline />
-            </button>
+            <div className="flex gap-4 items-center">
+              <Link to={`/reports/${param}/fix`} className="text-xl">
+                <BsPencilSquare />
+              </Link>
+              <button
+                type="button"
+                onClick={() => handleDelete()}
+                className="text-2xl "
+              >
+                <MdDeleteOutline />
+              </button>
+            </div>
           </div>
           <div className="h-[170vw] xl:h-[86vh] w-full overflow-hidden reportTable relative">
             <HotTableOption
@@ -143,9 +149,6 @@ export default function ViewReport() {
               {/* <button className="btn_default" onClick={exportToXLSX}>
               Export XLSX
             </button> */}
-              <Link to={`/reports/${param}/fix`} className="btn_default">
-                fix
-              </Link>
             </div>
             <div className="flex gap-2">
               <div onClick={() => scrollToTop()}>위로</div>

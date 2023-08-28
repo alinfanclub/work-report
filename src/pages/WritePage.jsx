@@ -15,9 +15,6 @@ export default function WritePage() {
 
   const [user, setUser] = useState(null);
   const [title, setTitle] = useState("");
-  // eslint-disable-next-line
-  const [headers, setHeaders] = useState(null);
-  // eslint-disable-next-line
   const [data, setData] = useState();
   const [useTemplete, setUseTemplete] = useState(false);
 
@@ -38,7 +35,7 @@ export default function WritePage() {
     hot = hotRef.current.hotInstance;
     console.log(hot.getData());
     let data = JSON.stringify(hot.getData());
-    await addReport(headers, data, user, title).then((reportId) => {
+    await addReport(data, user, title).then((reportId) => {
       setTitle("");
       navigate(`/reports/${reportId}`);
     });
@@ -96,7 +93,7 @@ export default function WritePage() {
                 type="checkbox"
                 id="useTemplete"
                 className="hidden"
-                onChange={() => hadleuseTemplete()}
+                onChange={hadleuseTemplete}
               />
               <label htmlFor="useTemplete" className="flex items-center gap-2">
                 <p>템플릿 사용</p>

@@ -15,7 +15,6 @@ export default function FixReportPage() {
   let hot;
   // eslint-disable-next-line
   const [user, setUser] = useState(null);
-  const [headers, setHeaders] = useState([]);
   const [data, setData] = useState([]);
   const [title, setTitle] = useState("");
 
@@ -31,11 +30,6 @@ export default function FixReportPage() {
           data.headers
             ? Array(data.headers).concat(JSON.parse(data.data)).slice(1)
             : JSON.parse(data.data)
-        );
-        setHeaders(
-          data.headers
-            ? data.headers
-            : Array(data.headers).concat(JSON.parse(data.data))[0]
         );
         setTitle(data.title);
         console.log(Array(data.headers).concat(JSON.parse(data.data)));
@@ -54,8 +48,7 @@ export default function FixReportPage() {
     hot = hotRef.current.hotInstance;
     console.log({ data: JSON.stringify(hot.getData()) });
     let data = JSON.stringify(hot.getData());
-    setHeaders(data[0]);
-    await updateReport(headers, data, title, param).then(() => {
+    await updateReport(data, title, param).then(() => {
       setTitle("");
       navigate(`/reports/${param}`);
     });
@@ -87,45 +80,43 @@ export default function FixReportPage() {
         </div>
       )}
       {tableData && (
-        <form
-          onSubmit={(...arg) => saveClickCallback(...arg)}
-        >
+        <form onSubmit={(...arg) => saveClickCallback(...arg)}>
           <div className="flex flex-col gap-2 grow p-4 xl:w-full w-screen">
-          <div className="flex gap-2 w-full flex-col xl:flex-row items-start xl:items-end">
-            <input
-              type="text"
-              placeholder="제목"
-              onChange={(e) => setTitle(e.target.value)}
-              value={title}
-              className="max-w-[300px]"
-              required
-            />
-            <small>{timeStampFormat(tableData.createdAt)}</small>
-          </div>
-          <div className="h-[170vw] xl:h-[86vh] w-full overflow-hidden reportTable relative">
-            <HotTableOption
-              tableData={tableData}
-              data={data}
-              hotRef={hotRef}
-              colHeaders={true}
-            />
-          </div>
-          <div className="flex jusitify-start items-center w-full gap-4">
-            <div className="flex gap-4">
-              <button type="submit" className="btn_default">
-                save
-              </button>
-              {/* <button onClick={addRow} type="button" className="btn_default">
+            <div className="flex gap-2 w-full flex-col xl:flex-row items-start xl:items-end">
+              <input
+                type="text"
+                placeholder="제목"
+                onChange={(e) => setTitle(e.target.value)}
+                value={title}
+                className="max-w-[300px]"
+                required
+              />
+              <small>{timeStampFormat(tableData.createdAt)}</small>
+            </div>
+            <div className="h-[170vw] xl:h-[86vh] w-full overflow-hidden reportTable relative">
+              <HotTableOption
+                tableData={tableData}
+                data={data}
+                hotRef={hotRef}
+                colHeaders={true}
+              />
+            </div>
+            <div className="flex jusitify-start items-center w-full gap-4">
+              <div className="flex gap-4">
+                <button type="submit" className="btn_default">
+                  save
+                </button>
+                {/* <button onClick={addRow} type="button" className="btn_default">
               addRow
             </button> */}
-            </div>
-            <div className="flex gap-2">
-              <div onClick={() => scrollToTop()}>위로</div>
-              <div onClick={() => scrollToBottom()} className="">
-                아래로
+              </div>
+              <div className="flex gap-2">
+                <div onClick={() => scrollToTop()}>위로</div>
+                <div onClick={() => scrollToBottom()} className="">
+                  아래로
+                </div>
               </div>
             </div>
-          </div>
           </div>
         </form>
       )}
