@@ -123,7 +123,7 @@ export default function ViewReport() {
               readOnly={true}
             />
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-4 items-center">
             <div className="flex gap-4">
               {data.length > 0 && (
                 <CSVLink

@@ -58,18 +58,28 @@ export default function WritePage() {
   };
 
   const hadleuseTemplete = () => {
+    hot = hotRef.current.hotInstance;
+    const data = hot.getData();
     if (!useTemplete) {
-      setData([
-        ["날짜", "분류", "요청자", "내용", "작업자", "전달방식", "관련 파일명"],
-        [],
-        [],
-        [],
-        [],
-      ]);
-      setUseTemplete(true);
+      if (window.confirm("템플릿을 사용하겠습니까?")) {
+        const templete = [
+          "날짜",
+          "분류",
+          "요청자",
+          "내용",
+          "작업자",
+          "전달방식",
+          "관련 파일명",
+        ];
+        console.log(Array(templete).concat(data));
+        setData(Array(templete).concat(data));
+        setUseTemplete(true);
+      }
     } else {
-      setData([["", "", "", "", "", "", ""], [], [], [], []]);
-      setUseTemplete(false);
+      if (window.confirm("템플릿을 사용 취소 하겠습니까?")) {
+        setData(data.slice(1));
+        setUseTemplete(false);
+      }
     }
   };
   const handleTitleChange = (e) => {
