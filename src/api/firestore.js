@@ -30,7 +30,7 @@ export async function getUserDate(user) {
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
-    console.log(doc.id, " => ", doc.data());
+    console.log(doc.id, " =>", doc.data());
   });
 }
 
@@ -40,8 +40,6 @@ export async function getReportData(user) {
   const querySnapshot = await getDocs(q);
   let data = [];
   querySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-    console.log(doc.id, " => ", doc.data());
     data.push(doc.data());
   });
   return data;
@@ -53,7 +51,6 @@ export async function getReportDataDetail(params) {
   let data;
   querySnapshot.forEach((doc) => {
     data = Object(doc.data());
-    console.log(data);
   });
   return data;
 }
@@ -74,10 +71,9 @@ export async function addReport(data, user, title) {
 }
 
 export async function updateReport(data, title, reportId) {
-  console.log(reportId);
-  const washingtonRef = doc(db, "reports", reportId);
+  const reportRef = doc(db, "reports", reportId);
 
-  await updateDoc(washingtonRef, {
+  await updateDoc(reportRef, {
     title: title,
     data: data,
     fix: true,
