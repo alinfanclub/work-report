@@ -6,6 +6,8 @@ import { useNavigate } from "react-router";
 import { AiFillCheckSquare, AiOutlineCheckSquare } from "react-icons/ai";
 import * as XLSX from "xlsx";
 import HotTableOption from "../service/HotTableOption";
+import { useSpeechRecognition } from "react-speech-recognition";
+import SpeechRecognition from "react-speech-recognition/lib/SpeechRecognition";
 
 export default function WritePage() {
   registerAllModules();
@@ -85,6 +87,16 @@ export default function WritePage() {
     setTitle(e.target.value);
   };
 
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+  } = useSpeechRecognition();
+
+  const startListening = () =>
+    SpeechRecognition.startListening({ continuous: true });
+
   return (
     <div className="w-full">
       <form onSubmit={saveClickCallback}>
@@ -136,6 +148,24 @@ export default function WritePage() {
           </div>
         </div>
       </form>
+      {!browserSupportsSpeechRecognition ? (
+        <span>Browser doesn't support speech recognition.</span>
+      ) : (
+        <div>
+          <p>Microphone: {listening ? "on" : "off"}</p>
+          <button onTouchStart={startListening} onMouseDown={startListening}>
+            녹음 시작
+          </button>
+          <button
+            onTouchEnd={SpeechRecognition.stopListening}
+            onMouseUp={SpeechRecognition.stopListening}
+          >
+            녹음 정지
+          </button>
+          <button onClick={resetTranscript}>Reset</button>
+          <p>{transcript}</p>
+        </div>
+      )}
     </div>
   );
 }

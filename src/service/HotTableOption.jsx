@@ -7,6 +7,7 @@ export default function HotTableOption({
   hotRef,
   colHeaders,
   readOnly,
+  afterSelection,
 }) {
   const exclude = () => {
     const handsontableInstance = hotRef.current.hotInstance;
@@ -68,6 +69,7 @@ export default function HotTableOption({
       columnSorting={true}
       width={"100%"}
       afterColumnSort={exclude}
+      afterSelection={afterSelection}
       // for non-commercial use only
     />
   );
