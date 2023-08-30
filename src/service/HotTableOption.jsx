@@ -8,6 +8,7 @@ export default function HotTableOption({
   colHeaders,
   readOnly,
   afterSelection,
+  contextMenu
 }) {
   const exclude = () => {
     const handsontableInstance = hotRef.current.hotInstance;
@@ -63,7 +64,24 @@ export default function HotTableOption({
       licenseKey="non-commercial-and-evaluation"
       readOnly={readOnly ? readOnly : false}
       ref={hotRef}
-      contextMenu={true}
+      contextMenu={!contextMenu ?  true : {items: {
+        "row_above": {},   // 기본 메뉴 항목
+        "row_below": {},
+        "col_left": {},
+        "col_right": {},
+        "remove_row": {},
+        "remove_col": {},
+        "undo": {},
+        "redo": {},
+        "make_read_only": {},
+        "alignment": {},
+        "start_recording": contextMenu["start_recording"],
+        "stop_recording": contextMenu["stop_recording"],
+        "---------": {},   // 구분선 추가
+        "copy": {},
+        "cut": {},
+        "paste": {}
+    }}}
       manualColumnResize={true}
       dropdownMenu={true}
       columnSorting={true}

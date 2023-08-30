@@ -8,6 +8,7 @@ import * as XLSX from "xlsx";
 import HotTableOption from "../service/HotTableOption";
 import { useSpeechRecognition } from "react-speech-recognition";
 import SpeechRecognition from "react-speech-recognition/lib/SpeechRecognition";
+import { BsRecord2 } from "react-icons/bs";
 
 export default function WritePage() {
   registerAllModules();
@@ -19,6 +20,7 @@ export default function WritePage() {
   const [title, setTitle] = useState("");
   const [data, setData] = useState();
   const [useTemplete, setUseTemplete] = useState(false);
+  const [selectedCell, setSelectedCell] = useState(null);
 
   useEffect(() => {
     onUserStateChanged((user) => {
@@ -87,6 +89,7 @@ export default function WritePage() {
     setTitle(e.target.value);
   };
 
+  // 녹음 라이브러리 불러오기
   const {
     transcript,
     listening,
@@ -94,8 +97,51 @@ export default function WritePage() {
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
 
-  const startListening = () =>
-    SpeechRecognition.startListening({ continuous: true });
+    // 녹음 자동 종료가 아니라 계속 녹음 되로록 설정
+  const startListening = () => SpeechRecognition.startListening({ continuous: true });
+
+    // 선택한 셀의 위치 정보를 저장하고 녹음 시작
+    const startRecordingFromMenu = (key, selection, clickEvent) => {
+      const startRow = selection[0].start.row;
+      const startCol = selection[0].start.col;
+      // console.log(clickEvent, clickEvent.x, clickEvent.y)
+      // const stopModal = document.getElementById("stopModal");
+      // stopModal.style.display = "fixed";
+      // stopModal.style.top = `${document.querySelector("td.highlight").getBoundingClientRect().y}px`;
+      // stopModal.style.left = `${document.querySelector("td.highlight").getBoundingClientRect().x + 200}px`;
+      
+      setSelectedCell({ row: startRow, col: startCol });
+      startListening();
+    }
+
+    // 녹음 시작, 녹음 중지 메뉴 생성
+    const contextMenuItems = {
+      "start_recording": {
+          name: "녹음 시작",
+          callback: startRecordingFromMenu
+      },
+      "stop_recording": {
+        name: "녹음 중지",
+        callback: SpeechRecognition.stopListening
+      }
+    };
+
+    // 리스닝에 따라 녹음 중지시 위치 정보 초기화 및 녹음 정보 초기화
+    useEffect(() => {
+      if (!listening && selectedCell && transcript) {
+        setSelectedCell(null);
+        resetTranscript();
+      }
+    }, [listening, transcript, resetTranscript, selectedCell]);
+
+    // transcript를 감지하여 녹음 중지시 녹음 정보를 선택한 셀에 저장
+    useEffect(() => {
+      if (selectedCell && transcript) {
+          // eslint-disable-next-line
+          hot = hotRef.current.hotInstance;
+          hot.setDataAtCell(selectedCell.row, selectedCell.col, transcript);
+      }
+  }, [transcript]);
 
   return (
     <div className="w-full">
@@ -127,7 +173,7 @@ export default function WritePage() {
             </div>
           </div>
           <div className="min-h-[120vw] xl:min-h-[30vw] w-full  overflow-hidden reportTable relative">
-            <HotTableOption colHeaders={true} data={data} hotRef={hotRef} />
+            <HotTableOption colHeaders={true} data={data} hotRef={hotRef} contextMenu={contextMenuItems}/>
           </div>
           <div className="flex gap-4">
             <button type="submit" className="btn_default">
@@ -151,19 +197,18 @@ export default function WritePage() {
       {!browserSupportsSpeechRecognition ? (
         <span>Browser doesn't support speech recognition.</span>
       ) : (
-        <div>
-          <p>Microphone: {listening ? "on" : "off"}</p>
-          <button onTouchStart={startListening} onMouseDown={startListening}>
-            녹음 시작
-          </button>
-          <button
-            onTouchEnd={SpeechRecognition.stopListening}
-            onMouseUp={SpeechRecognition.stopListening}
-          >
-            녹음 정지
-          </button>
-          <button onClick={resetTranscript}>Reset</button>
-          <p>{transcript}</p>
+        <div id="stopModal" className='fixed bottom-4 left-1/2 -translate-X-1/2'>
+          {listening && (
+            <div className=''>
+            <button
+              onTouchEnd={SpeechRecognition.stopListening}
+              onMouseUp={SpeechRecognition.stopListening}
+            >
+              <BsRecord2 className='text-red-500 xl:text-[5vw]'/>
+            </button>
+            <p onClick={SpeechRecognition.stopListening} className='text-xl font-bold '>녹음 중지</p>
+            </div>
+          )}
         </div>
       )}
     </div>
