@@ -14,15 +14,16 @@ import { MdDeleteOutline } from "react-icons/md";
 import { BsPencilSquare } from "react-icons/bs";
 export default function ViewReport() {
   const [headers, setHeaders] = useState([]);
-  const [data, setData] = useState([]);
+  const [tableData, setTableData] = useState([]);
   const [title, setTitle] = useState("");
 
   const param = useParams().id;
   const hotRef = useRef(null);
+
   const {
     isLoading,
     isError,
-    data: tableData,
+    data: queryData,
   } = useQuery({
     queryKey: ["report", param],
     queryFn: () =>
@@ -35,7 +36,7 @@ export default function ViewReport() {
             return header;
           }
         });
-        setData(
+        setTableData(
           data.headers !== null || data.headers !== undefined
             ? JSON.parse(data.data).slice(1)
             : JSON.parse(data.data).slice(1)
@@ -48,9 +49,6 @@ export default function ViewReport() {
             : newHeaders2
         );
         setTitle(data.title);
-        // data.data 를 JSON.parse(data.data) 로 바꿔야함
-        console.log(JSON.parse(data.data)[0]);
-        console.log();
         return data;
       }),
   });
@@ -88,17 +86,17 @@ export default function ViewReport() {
           로딩중...
         </div>
       )}
-      {tableData && (
+      {queryData && (
         <div className="grow flex flex-col gap-4 p-4 w-full">
           <div className="flex justify-between w-full items-start xl:items-center">
             <h1 className="flex gap-4 xl:items-end flex-col xl:flex-row ">
               {title && title}
               <div className="flex gap-2">
-                <small>{timeStampFormat(tableData.createdAt)}</small>
+                <small>{timeStampFormat(queryData.createdAt)}</small>
                 <small>
-                  {formatAgo(timeStampFormat(tableData.createdAt), "ko")}
+                  {formatAgo(timeStampFormat(queryData.createdAt), "ko")}
                 </small>
-                {tableData.fix && <small>수정됨</small>}
+                {queryData.fix && <small>수정됨</small>}
               </div>
             </h1>
             <div className="flex gap-4 items-center">
@@ -116,8 +114,8 @@ export default function ViewReport() {
           </div>
           <div className="h-[170vw] xl:h-[86vh] w-full overflow-hidden reportTable relative">
             <HotTableOption
+              queryData={queryData}
               tableData={tableData}
-              data={data}
               hotRef={hotRef}
               colHeaders={headers}
               readOnly={true}
@@ -125,12 +123,12 @@ export default function ViewReport() {
           </div>
           <div className="flex gap-4 items-center">
             <div className="flex gap-4">
-              {data.length > 0 && (
+              {tableData.length > 0 && (
                 <CSVLink
-                  data={data}
+                  data={tableData}
                   headers={headers}
                   filename={`${title}_${timeStampFormatNotHour(
-                    tableData.createdAt
+                    queryData.createdAt
                   )}.csv`}
                   className="btn_default"
                   onClick={() => {
