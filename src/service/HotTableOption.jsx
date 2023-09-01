@@ -2,13 +2,13 @@ import { HotTable } from "@handsontable/react";
 import React from "react";
 
 export default function HotTableOption({
+  queryData,
   tableData,
-  data,
   hotRef,
   colHeaders,
   readOnly,
   afterSelection,
-  contextMenu
+  contextMenu,
 }) {
   const exclude = () => {
     const handsontableInstance = hotRef.current.hotInstance;
@@ -29,16 +29,16 @@ export default function HotTableOption({
   // colWidth를 반환하는 함수
   const colWidths = () => {
     let colWidths = [];
-    if (tableData) {
+    if (queryData) {
       if (window.innerWidth < 1024) {
-        for (let i = 0; i < JSON.parse(tableData.data)[0].length; i++) {
+        for (let i = 0; i < JSON.parse(queryData.data)[0].length; i++) {
           colWidths.push(100);
         }
         return colWidths;
       }
-      for (let i = 0; i < JSON.parse(tableData.data)[0].length; i++) {
+      for (let i = 0; i < JSON.parse(queryData.data)[0].length; i++) {
         colWidths.push(
-          window.innerWidth / JSON.parse(tableData.data)[0].length
+          window.innerWidth / JSON.parse(queryData.data)[0].length
         );
       }
       return colWidths;
@@ -53,7 +53,7 @@ export default function HotTableOption({
   return (
     <HotTable
       id="hot"
-      data={data && data}
+      data={tableData && tableData}
       colHeaders={colHeaders}
       rowHeaders={true}
       manualColumnMove={true}
@@ -64,24 +64,30 @@ export default function HotTableOption({
       licenseKey="non-commercial-and-evaluation"
       readOnly={readOnly ? readOnly : false}
       ref={hotRef}
-      contextMenu={!contextMenu ?  true : {items: {
-        "row_above": {},   // 기본 메뉴 항목
-        "row_below": {},
-        "col_left": {},
-        "col_right": {},
-        "remove_row": {},
-        "remove_col": {},
-        "undo": {},
-        "redo": {},
-        "make_read_only": {},
-        "alignment": {},
-        "start_recording": contextMenu["start_recording"],
-        "stop_recording": contextMenu["stop_recording"],
-        "---------": {},   // 구분선 추가
-        "copy": {},
-        "cut": {},
-        "paste": {}
-    }}}
+      contextMenu={
+        !contextMenu
+          ? true
+          : {
+              items: {
+                row_above: {}, // 기본 메뉴 항목
+                row_below: {},
+                col_left: {},
+                col_right: {},
+                remove_row: {},
+                remove_col: {},
+                undo: {},
+                redo: {},
+                make_read_only: {},
+                alignment: {},
+                start_recording: contextMenu["start_recording"],
+                stop_recording: contextMenu["stop_recording"],
+                "---------": {}, // 구분선 추가
+                copy: {},
+                cut: {},
+                paste: {},
+              },
+            }
+      }
       manualColumnResize={true}
       dropdownMenu={true}
       columnSorting={true}

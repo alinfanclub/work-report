@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { registerAllModules } from "handsontable/registry";
 import { getReportDataDetail, updateReport } from "../api/firestore";
-import { onUserStateChanged } from "../api/firebase";
 import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { timeStampFormat } from "../utill/timeStampFormat";
@@ -13,20 +12,18 @@ export default function FixReportPage() {
   const hotRef = useRef(null);
   const param = useParams().id;
   let hot;
-  // eslint-disable-next-line
-  const [user, setUser] = useState(null);
-  const [data, setData] = useState([]);
+  const [tableData, setTableData] = useState([]);
   const [title, setTitle] = useState("");
 
   const {
     isLoading,
     isError,
-    data: tableData,
+    data: queryData,
   } = useQuery({
     queryKey: ["report", param],
     queryFn: () =>
       getReportDataDetail(param).then((data) => {
-        setData(
+        setTableData(
           data.headers
             ? Array(data.headers).concat(JSON.parse(data.data)).slice(1)
             : JSON.parse(data.data)
@@ -37,12 +34,6 @@ export default function FixReportPage() {
       }),
     refetchOnWindowFocus: false,
   });
-
-  useEffect(() => {
-    onUserStateChanged((user) => {
-      setUser(user);
-    });
-  }, []);
   const saveClickCallback = async (e) => {
     e.preventDefault();
     hot = hotRef.current.hotInstance;
@@ -79,7 +70,7 @@ export default function FixReportPage() {
           로딩중...
         </div>
       )}
-      {tableData && (
+      {queryData && (
         <form onSubmit={(...arg) => saveClickCallback(...arg)}>
           <div className="flex flex-col gap-2 grow p-4 xl:w-full w-screen">
             <div className="flex gap-2 w-full flex-col xl:flex-row items-start xl:items-end">
@@ -91,12 +82,12 @@ export default function FixReportPage() {
                 className="max-w-[300px]"
                 required
               />
-              <small>{timeStampFormat(tableData.createdAt)}</small>
+              <small>{timeStampFormat(queryData.createdAt)}</small>
             </div>
             <div className="h-[170vw] xl:h-[86vh] w-full overflow-hidden reportTable relative">
               <HotTableOption
+                queryData={queryData}
                 tableData={tableData}
-                data={data}
                 hotRef={hotRef}
                 colHeaders={true}
               />
