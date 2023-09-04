@@ -28,26 +28,8 @@ export default function ViewReport() {
     queryKey: ["report", param],
     queryFn: () =>
       getReportDataDetail(param).then((data) => {
-        const newHeaders = JSON.parse(data.data)[0];
-        const newHeaders2 = newHeaders.map((header) => {
-          if (header === null) {
-            return "";
-          } else {
-            return header;
-          }
-        });
-        setTableData(
-          data.headers !== null || data.headers !== undefined
-            ? JSON.parse(data.data).slice(1)
-            : JSON.parse(data.data).slice(1)
-        );
-        setHeaders(
-          data.headers === undefined
-            ? newHeaders2
-            : data.headers !== null
-            ? data.headers
-            : newHeaders2
-        );
+        setTableData(JSON.parse(data.data).slice(1));
+        setHeaders(JSON.parse(data.data)[0]);
         setTitle(data.title);
         return data;
       }),
